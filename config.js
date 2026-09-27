@@ -5,8 +5,8 @@ window.SITE = {
   phoneHref: "+998994631713",
   email: "info@mastercoffee.uz",
   address: {
-    uz: "Toshkent, Amir Temur ko'chasi 42, Mirobod tumani",
-    ru: "Ташкент, улица Амира Темура 42, Мирабадский район"
+    uz: "Toshkent shahar, Uchtepa tumani, 14-kvartal, 12-uy",
+    ru: "г. Ташкент, Учтепинский район, 14-квартал, дом 12"
   },
   hours: { uz: "Dush–Shan: 09:00 – 19:00", ru: "Пн–Сб: 09:00 – 19:00" },
   telegramUser: "mastercoffeeprice",
