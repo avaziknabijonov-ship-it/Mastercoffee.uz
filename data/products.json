@@ -1,0 +1,372 @@
+[
+  {
+    "id": "m1",
+    "cat": "machines",
+    "sku": "MC-DRC-F100",
+    "brand": "Dr.Coffee",
+    "price": 41869000,
+    "old": 0,
+    "badge": { "uz": "Hit", "ru": "Хит" },
+    "stock": "in",
+    "name": { "uz": "Avtomat kofe mashinasi Dr.Coffee F100", "ru": "Автоматическая кофемашина Dr.Coffee F100" },
+    "desc": { "uz": "Don, sut va eriydigan mahsulot bunkerlari. Kuniga 150 chashka.", "ru": "Бункеры для зерна, молока и растворимого продукта. 150 чашек в день." },
+    "specs": [
+      { "k": { "uz": "Turi", "ru": "Тип" }, "v": { "uz": "Avtomat", "ru": "Автоматическая" } },
+      { "k": { "uz": "Quvvat", "ru": "Мощность" }, "v": { "uz": "2,7 kVt", "ru": "2,7 кВт" } },
+      { "k": { "uz": "Suv bakı", "ru": "Бак для воды" }, "v": { "uz": "4 l / vodoprovod", "ru": "4 л / водопровод" } },
+      { "k": { "uz": "Kafolat", "ru": "Гарантия" }, "v": { "uz": "24 oy", "ru": "24 месяца" } }
+    ],
+    "images": [
+      "https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1610889556528-9a770e32642f?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80"
+    ]
+  },
+  {
+    "id": "m2",
+    "cat": "machines",
+    "sku": "MC-BIA-BL500",
+    "brand": "Bianchi",
+    "price": 69827000,
+    "old": 0,
+    "badge": null,
+    "stock": "in",
+    "name": { "uz": "Professional rojkovıy mashina Bianchi BL-500", "ru": "Профессиональная рожковая кофемашина Bianchi BL-500" },
+    "desc": { "uz": "2 guruh, 3,2 kVt, kafe va restoranlar uchun.", "ru": "2 группы, 3,2 кВт, для кафе и ресторанов." },
+    "specs": [
+      { "k": { "uz": "Guruhlar", "ru": "Группы" }, "v": { "uz": "2 ta", "ru": "2 шт" } },
+      { "k": { "uz": "Quvvat", "ru": "Мощность" }, "v": { "uz": "3,2 kVt", "ru": "3,2 кВт" } },
+      { "k": { "uz": "Boyler", "ru": "Бойлер" }, "v": { "uz": "11 l", "ru": "11 л" } },
+      { "k": { "uz": "Kafolat", "ru": "Гарантия" }, "v": { "uz": "24 oy", "ru": "24 месяца" } }
+    ],
+    "images": [
+      "https://images.unsplash.com/photo-1521302080334-4bebac2763a6?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=900&q=80"
+    ]
+  },
+  {
+    "id": "m3",
+    "cat": "machines",
+    "sku": "MC-SCH-CLUB",
+    "brand": "Schaerer",
+    "price": 77908000,
+    "old": 0,
+    "badge": { "uz": "Premium", "ru": "Премиум" },
+    "stock": "order",
+    "name": { "uz": "Schaerer Coffee Club avtomat mashina", "ru": "Автоматическая кофемашина Schaerer Coffee Club" },
+    "desc": { "uz": "Kompakt korpus, sensorli ekran, sut moduli bilan.", "ru": "Компактный корпус, сенсорный экран, молочный модуль." },
+    "specs": [
+      { "k": { "uz": "Turi", "ru": "Тип" }, "v": { "uz": "Avtomat", "ru": "Автоматическая" } },
+      { "k": { "uz": "Kuniga", "ru": "В день" }, "v": { "uz": "200 chashka", "ru": "200 чашек" } },
+      { "k": { "uz": "Kafolat", "ru": "Гарантия" }, "v": { "uz": "24 oy", "ru": "24 месяца" } }
+    ],
+    "images": [
+      "https://images.unsplash.com/photo-1610889556528-9a770e32642f?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?auto=format&fit=crop&w=900&q=80"
+    ]
+  },
+  {
+    "id": "m4",
+    "cat": "machines",
+    "sku": "MC-PHI-LOR",
+    "brand": "Philips",
+    "price": 2576000,
+    "old": 2890000,
+    "badge": { "uz": "Chegirma", "ru": "Скидка" },
+    "stock": "in",
+    "name": { "uz": "Kapsulali mashina Philips L'OR Barista Sublime", "ru": "Капсульная кофемашина Philips L'OR Barista Sublime" },
+    "desc": { "uz": "Uy va kichik ofis uchun, bir vaqtda 2 kapsula.", "ru": "Для дома и небольшого офиса, 2 капсулы одновременно." },
+    "specs": [
+      { "k": { "uz": "Bosim", "ru": "Давление" }, "v": { "uz": "19 bar", "ru": "19 бар" } },
+      { "k": { "uz": "Suv bakı", "ru": "Бак для воды" }, "v": { "uz": "0,8 l", "ru": "0,8 л" } },
+      { "k": { "uz": "Kafolat", "ru": "Гарантия" }, "v": { "uz": "12 oy", "ru": "12 месяцев" } }
+    ],
+    "images": [
+      "https://images.unsplash.com/photo-1572119865084-43c285814d63?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1606791405792-1004f1718d0c?auto=format&fit=crop&w=900&q=80"
+    ]
+  },
+  {
+    "id": "m5",
+    "cat": "machines",
+    "sku": "MC-DEL-EC685",
+    "brand": "Delonghi",
+    "price": 4790000,
+    "old": 0,
+    "badge": null,
+    "stock": "in",
+    "name": { "uz": "Rojkovıy mashina Delonghi Dedica EC685", "ru": "Рожковая кофемашина Delonghi Dedica EC685" },
+    "desc": { "uz": "15 bar bosim, kappuchinator, 15 sm kenglik.", "ru": "15 бар, капучинатор, ширина 15 см." },
+    "specs": [
+      { "k": { "uz": "Bosim", "ru": "Давление" }, "v": { "uz": "15 bar", "ru": "15 бар" } },
+      { "k": { "uz": "Kenglik", "ru": "Ширина" }, "v": { "uz": "15 sm", "ru": "15 см" } },
+      { "k": { "uz": "Kafolat", "ru": "Гарантия" }, "v": { "uz": "12 oy", "ru": "12 месяцев" } }
+    ],
+    "images": [
+      "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1521302080334-4bebac2763a6?auto=format&fit=crop&w=900&q=80"
+    ]
+  },
+  {
+    "id": "m6",
+    "cat": "machines",
+    "sku": "MC-MAZ-SJ",
+    "brand": "Mazzer",
+    "price": 12400000,
+    "old": 0,
+    "badge": null,
+    "stock": "order",
+    "name": { "uz": "Professional kofe tegirmoni (grinder) Mazzer", "ru": "Профессиональная кофемолка Mazzer" },
+    "desc": { "uz": "64 mm po'lat tegirmon toshlari, stepless sozlash.", "ru": "Стальные жернова 64 мм, бесступенчатая настройка." },
+    "specs": [
+      { "k": { "uz": "Jernov", "ru": "Жернова" }, "v": { "uz": "64 mm", "ru": "64 мм" } },
+      { "k": { "uz": "Bunker", "ru": "Бункер" }, "v": { "uz": "1,2 kg", "ru": "1,2 кг" } },
+      { "k": { "uz": "Kafolat", "ru": "Гарантия" }, "v": { "uz": "12 oy", "ru": "12 месяцев" } }
+    ],
+    "images": [
+      "https://images.unsplash.com/photo-1587734195503-904fca47e0e9?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1453614512568-c4024d13c247?auto=format&fit=crop&w=900&q=80"
+    ]
+  },
+
+  {
+    "id": "b1",
+    "cat": "beans",
+    "sku": "MC-BEAN-ESP1",
+    "brand": "Master Coffee",
+    "price": 169000,
+    "old": 0,
+    "badge": { "uz": "Hit", "ru": "Хит" },
+    "stock": "in",
+    "name": { "uz": "Don kofe Espresso Blend, 1 kg", "ru": "Кофе в зёрнах Espresso Blend, 1 кг" },
+    "desc": { "uz": "80% arabica / 20% robusta. Shokolad va yong'oq notalari.", "ru": "80% арабика / 20% робуста. Ноты шоколада и ореха." },
+    "specs": [
+      { "k": { "uz": "Qovurish", "ru": "Обжарка" }, "v": { "uz": "O'rta-quyuq", "ru": "Средне-тёмная" } },
+      { "k": { "uz": "Qadoq", "ru": "Упаковка" }, "v": { "uz": "1 kg klapanli paket", "ru": "1 кг, пакет с клапаном" } }
+    ],
+    "images": [
+      "https://images.unsplash.com/photo-1442550528053-c431ecb55509?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1516224498413-84ecf3a1e7fd?auto=format&fit=crop&w=900&q=80"
+    ]
+  },
+  {
+    "id": "b2",
+    "cat": "beans",
+    "sku": "MC-BEAN-ETH1",
+    "brand": "Master Coffee",
+    "price": 249000,
+    "old": 0,
+    "badge": { "uz": "Single origin", "ru": "Single origin" },
+    "stock": "in",
+    "name": { "uz": "Don kofe Ethiopia Sidamo, 1 kg", "ru": "Кофе в зёрнах Ethiopia Sidamo, 1 кг" },
+    "desc": { "uz": "Sitrus va gul aromati, filtr uchun ideal.", "ru": "Цитрусовый и цветочный аромат, идеален для фильтра." },
+    "specs": [
+      { "k": { "uz": "Qovurish", "ru": "Обжарка" }, "v": { "uz": "Yengil", "ru": "Светлая" } },
+      { "k": { "uz": "Balandlik", "ru": "Высота" }, "v": { "uz": "1900 m", "ru": "1900 м" } }
+    ],
+    "images": [
+      "https://images.unsplash.com/photo-1453614512568-c4024d13c247?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1524350876685-274059332603?auto=format&fit=crop&w=900&q=80"
+    ]
+  },
+  {
+    "id": "b3",
+    "cat": "beans",
+    "sku": "MC-BEAN-COL1",
+    "brand": "Master Coffee",
+    "price": 229000,
+    "old": 265000,
+    "badge": { "uz": "Chegirma", "ru": "Скидка" },
+    "stock": "in",
+    "name": { "uz": "Don kofe Colombia Supremo, 1 kg", "ru": "Кофе в зёрнах Colombia Supremo, 1 кг" },
+    "desc": { "uz": "Karamel shirinligi, muvozanatli kislotalik.", "ru": "Карамельная сладость, сбалансированная кислотность." },
+    "specs": [
+      { "k": { "uz": "Qovurish", "ru": "Обжарка" }, "v": { "uz": "O'rta", "ru": "Средняя" } }
+    ],
+    "images": ["https://images.unsplash.com/photo-1524350876685-274059332603?auto=format&fit=crop&w=900&q=80"]
+  },
+  {
+    "id": "b4",
+    "cat": "beans",
+    "sku": "MC-BEAN-BRA1",
+    "brand": "Master Coffee",
+    "price": 189000,
+    "old": 0,
+    "badge": null,
+    "stock": "in",
+    "name": { "uz": "Don kofe Brazil Santos, 1 kg", "ru": "Кофе в зёрнах Brazil Santos, 1 кг" },
+    "desc": { "uz": "Yong'oq va shokolad, sutli ichimliklar uchun.", "ru": "Орех и шоколад, для молочных напитков." },
+    "specs": [{ "k": { "uz": "Qovurish", "ru": "Обжарка" }, "v": { "uz": "O'rta", "ru": "Средняя" } }],
+    "images": ["https://images.unsplash.com/photo-1498804103079-a6351b050096?auto=format&fit=crop&w=900&q=80"]
+  },
+  {
+    "id": "b5",
+    "cat": "beans",
+    "sku": "MC-BEAN-ESP10",
+    "brand": "Master Coffee",
+    "price": 1490000,
+    "old": 1690000,
+    "badge": { "uz": "Ulgurji", "ru": "Опт" },
+    "stock": "in",
+    "name": { "uz": "Ulgurji to'plam: Espresso Blend, 10 kg", "ru": "Оптовый набор: Espresso Blend, 10 кг" },
+    "desc": { "uz": "Kafe va restoranlar uchun oylik zaxira.", "ru": "Месячный запас для кафе и ресторанов." },
+    "specs": [{ "k": { "uz": "Qadoq", "ru": "Упаковка" }, "v": { "uz": "10 × 1 kg", "ru": "10 × 1 кг" } }],
+    "images": ["https://images.unsplash.com/photo-1516224498413-84ecf3a1e7fd?auto=format&fit=crop&w=900&q=80"]
+  },
+
+  {
+    "id": "p1",
+    "cat": "packed",
+    "sku": "MC-JAC-VEL95",
+    "brand": "Jacobs",
+    "price": 47747,
+    "old": 52000,
+    "badge": { "uz": "Chegirma", "ru": "Скидка" },
+    "stock": "in",
+    "name": { "uz": "Eriydigan kofe Jacobs Velvet, 95 g", "ru": "Кофе растворимый Jacobs Velvet, 95 г" },
+    "desc": { "uz": "Sublimatsiya qilingan, banka qadoq.", "ru": "Сублимированный, стеклянная банка." },
+    "specs": [{ "k": { "uz": "Hajm", "ru": "Объём" }, "v": { "uz": "95 g", "ru": "95 г" } }],
+    "images": ["https://images.unsplash.com/photo-1559525839-b184a4d698c7?auto=format&fit=crop&w=900&q=80"]
+  },
+  {
+    "id": "p2",
+    "cat": "packed",
+    "sku": "MC-LOR-ABS",
+    "brand": "L'OR",
+    "price": 80500,
+    "old": 0,
+    "badge": null,
+    "stock": "in",
+    "name": { "uz": "Kapsulali kofe L'OR Absolu, 10 dona", "ru": "Кофе в капсулах L'OR Absolu, 10 шт" },
+    "desc": { "uz": "Nespresso mos kapsulalar, intensivlik 9.", "ru": "Капсулы совместимы с Nespresso, интенсивность 9." },
+    "specs": [{ "k": { "uz": "Miqdor", "ru": "Количество" }, "v": { "uz": "10 kapsula", "ru": "10 капсул" } }],
+    "images": ["https://images.unsplash.com/photo-1606791405792-1004f1718d0c?auto=format&fit=crop&w=900&q=80"]
+  },
+  {
+    "id": "p3",
+    "cat": "packed",
+    "sku": "MC-JAC-3IN1",
+    "brand": "Jacobs",
+    "price": 239280,
+    "old": 0,
+    "badge": { "uz": "Hit", "ru": "Хит" },
+    "stock": "in",
+    "name": { "uz": "Kofe ichimligi Jacobs 3in1, 20×12 g", "ru": "Кофейный напиток Jacobs 3в1, 20×12 г" },
+    "desc": { "uz": "Ofis va do'konlar uchun qulay qadoq.", "ru": "Удобная упаковка для офисов и магазинов." },
+    "specs": [{ "k": { "uz": "Qadoq", "ru": "Упаковка" }, "v": { "uz": "20 paket", "ru": "20 пакетиков" } }],
+    "images": ["https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=900&q=80"]
+  },
+  {
+    "id": "p4",
+    "cat": "packed",
+    "sku": "MC-GRD-250",
+    "brand": "Master Coffee",
+    "price": 69000,
+    "old": 0,
+    "badge": { "uz": "Bizning brend", "ru": "Наш бренд" },
+    "stock": "in",
+    "name": { "uz": "Yerma kofe Master Coffee Classic, 250 g", "ru": "Молотый кофе Master Coffee Classic, 250 г" },
+    "desc": { "uz": "Gyeyzer va frantsuz press uchun mayda helak.", "ru": "Помол для гейзера и френч-пресса." },
+    "specs": [{ "k": { "uz": "Hajm", "ru": "Объём" }, "v": { "uz": "250 g", "ru": "250 г" } }],
+    "images": ["https://images.unsplash.com/photo-1610889556528-9a770e32642f?auto=format&fit=crop&w=900&q=80"]
+  },
+  {
+    "id": "p5",
+    "cat": "packed",
+    "sku": "MC-DRIP-10",
+    "brand": "Master Coffee",
+    "price": 89000,
+    "old": 0,
+    "badge": { "uz": "Yangi", "ru": "Новинка" },
+    "stock": "in",
+    "name": { "uz": "Drip-kofe to'plami, 10 paket", "ru": "Набор дрип-кофе, 10 пакетов" },
+    "desc": { "uz": "Sayohat va ofis uchun bir martalik filtrlar.", "ru": "Одноразовые фильтры для поездок и офиса." },
+    "specs": [{ "k": { "uz": "Miqdor", "ru": "Количество" }, "v": { "uz": "10 × 11 g", "ru": "10 × 11 г" } }],
+    "images": ["https://images.unsplash.com/photo-1504630083234-14187a9df0f5?auto=format&fit=crop&w=900&q=80"]
+  },
+
+  {
+    "id": "a1",
+    "cat": "accessories",
+    "sku": "MC-TAMP-58",
+    "brand": "Master Coffee",
+    "price": 390000,
+    "old": 0,
+    "badge": null,
+    "stock": "in",
+    "name": { "uz": "Tamper 58 mm, po'lat", "ru": "Темпер 58 мм, сталь" },
+    "desc": { "uz": "Yog'och dastali, tekis taglik.", "ru": "Деревянная ручка, плоское основание." },
+    "specs": [{ "k": { "uz": "Diametr", "ru": "Диаметр" }, "v": { "uz": "58 mm", "ru": "58 мм" } }],
+    "images": ["https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&w=900&q=80"]
+  },
+  {
+    "id": "a2",
+    "cat": "accessories",
+    "sku": "MC-PITCH-600",
+    "brand": "Master Coffee",
+    "price": 180000,
+    "old": 0,
+    "badge": null,
+    "stock": "in",
+    "name": { "uz": "Sut uchun pitcher, 600 ml", "ru": "Питчер для молока, 600 мл" },
+    "desc": { "uz": "Nerjaveyka, latte art uchun tumshuq.", "ru": "Нержавейка, носик для латте-арта." },
+    "specs": [{ "k": { "uz": "Hajm", "ru": "Объём" }, "v": { "uz": "600 ml", "ru": "600 мл" } }],
+    "images": ["https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=900&q=80"]
+  },
+  {
+    "id": "a3",
+    "cat": "accessories",
+    "sku": "MC-FP-1L",
+    "brand": "Master Coffee",
+    "price": 240000,
+    "old": 290000,
+    "badge": { "uz": "Chegirma", "ru": "Скидка" },
+    "stock": "in",
+    "name": { "uz": "Frantsuz press, 1 l", "ru": "Френч-пресс, 1 л" },
+    "desc": { "uz": "Issiqqa chidamli shisha va po'lat filtr.", "ru": "Жаропрочное стекло и стальной фильтр." },
+    "specs": [{ "k": { "uz": "Hajm", "ru": "Объём" }, "v": { "uz": "1 l", "ru": "1 л" } }],
+    "images": ["https://images.unsplash.com/photo-1518057111178-44a106bad636?auto=format&fit=crop&w=900&q=80"]
+  },
+  {
+    "id": "a4",
+    "cat": "accessories",
+    "sku": "MC-V60-SET",
+    "brand": "Master Coffee",
+    "price": 320000,
+    "old": 0,
+    "badge": null,
+    "stock": "in",
+    "name": { "uz": "V60 filtr voronkasi + 100 ta filtr", "ru": "Воронка V60 + 100 фильтров" },
+    "desc": { "uz": "Keramika voronka, qo'lda damlash uchun.", "ru": "Керамическая воронка для ручного заваривания." },
+    "specs": [{ "k": { "uz": "Material", "ru": "Материал" }, "v": { "uz": "Keramika", "ru": "Керамика" } }],
+    "images": ["https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=80"]
+  },
+  {
+    "id": "a5",
+    "cat": "accessories",
+    "sku": "MC-SCALE-01",
+    "brand": "Master Coffee",
+    "price": 450000,
+    "old": 0,
+    "badge": { "uz": "Yangi", "ru": "Новинка" },
+    "stock": "order",
+    "name": { "uz": "Barista tarozisi, 0,1 g aniqlik", "ru": "Весы бариста, точность 0,1 г" },
+    "desc": { "uz": "O'rnatilgan taymer, USB-C quvvatlash.", "ru": "Встроенный таймер, зарядка USB-C." },
+    "specs": [{ "k": { "uz": "Aniqlik", "ru": "Точность" }, "v": { "uz": "0,1 g", "ru": "0,1 г" } }],
+    "images": ["https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=900&q=80"]
+  },
+  {
+    "id": "a6",
+    "cat": "accessories",
+    "sku": "MC-CLEAN-KIT",
+    "brand": "Master Coffee",
+    "price": 210000,
+    "old": 0,
+    "badge": null,
+    "stock": "in",
+    "name": { "uz": "Mashina tozalash to'plami (tabletka + dekalsifikator)", "ru": "Набор для чистки кофемашины (таблетки + декальцинатор)" },
+    "desc": { "uz": "Avtomat mashinalar profilaktikasi uchun.", "ru": "Для профилактики автоматических кофемашин." },
+    "specs": [{ "k": { "uz": "Tarkib", "ru": "Состав" }, "v": { "uz": "20 tabletka + 500 ml", "ru": "20 таблеток + 500 мл" } }],
+    "images": ["https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=900&q=80"]
+  }
+]

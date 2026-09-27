@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title data-i18n="meta.title">Master Coffee — Kofe mashinalari, kofe donlari, arenda va servis</title>
+<meta name="description" id="metaDesc" content="Master Coffee — professional kofe mashinalari va aksessuarlar sotuvi, kofe donlari va qadoqlangan kofe, kofe mashinalarini arendaga berish hamda ta'mirlash. Toshkent bo'ylab yetkazib berish." />
+<link rel="canonical" href="https://mastercoffee.uz/" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Master Coffee" />
+<meta property="og:title" id="ogTitle" content="Master Coffee — Kofe mashinalari, kofe donlari, arenda va servis" />
+<meta property="og:description" id="ogDesc" content="Kofe mashinalari sotuvi, arendasi va ta'mirlash. Don kofe va qadoqlangan kofe ulgurji hamda chakana." />
+<meta property="og:image" content="https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=1200&q=80" />
+<meta property="og:url" content="https://mastercoffee.uz/" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="theme-color" content="#8a4b25" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"Store",
+  "name":"Master Coffee",
+  "description":"Kofe mashinalari sotuvi, arendasi va ta'mirlash. Don kofe va qadoqlangan kofe.",
+  "url":"https://mastercoffee.uz/",
+  "telephone":"+998901234567",
+  "email":"info@mastercoffee.uz",
+  "address":{"@type":"PostalAddress","streetAddress":"Amir Temur ko'chasi 42","addressLocality":"Toshkent","addressCountry":"UZ"},
+  "openingHours":"Mo-Sa 09:00-19:00",
+  "priceRange":"$$"
+}
+</script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="container topbar__inner">
+    <span data-i18n="top.delivery"></span>
+    <div class="topbar__right">
+      <a href="tel:+998901234567" data-site="phone"></a>
+      <a href="#service" data-i18n="top.service"></a>
+      <a href="#contact" data-i18n="top.contacts"></a>
+      <div class="lang" id="lang">
+        <button class="lang__btn is-active" data-lang="uz">UZ</button>
+        <button class="lang__btn" data-lang="ru">RU</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<header class="nav" id="nav">
+  <div class="container nav__inner">
+    <a class="logo" href="#home">
+      <span class="logo__mark">M</span>
+      <span class="logo__text">Master<em>Coffee</em></span>
+    </a>
+
+    <form class="search" id="searchForm" role="search">
+      <input type="search" id="searchInput" data-i18n-ph="nav.search" aria-label="Search">
+      <button type="submit" data-i18n="nav.searchBtn"></button>
+    </form>
+
+    <div class="nav__actions">
+      <a href="#rent" class="nav__link" data-i18n="nav.rent"></a>
+      <a href="#service" class="nav__link" data-i18n="nav.repair"></a>
+      <button class="cart-btn" id="cartBtn">
+        <span data-i18n="nav.cart"></span>
+        <span class="cart-count" id="cartCount">0</span>
+      </button>
+      <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+  <div class="catnav">
+    <div class="container catnav__inner" id="catnav">
+      <a href="#catalog" data-jump="machines" data-i18n="cat.machines"></a>
+      <a href="#catalog" data-jump="beans" data-i18n="cat.beans"></a>
+      <a href="#catalog" data-jump="packed" data-i18n="cat.packed"></a>
+      <a href="#catalog" data-jump="accessories" data-i18n="cat.accessories"></a>
+      <a href="#rent" data-i18n="nav.rent"></a>
+      <a href="#service" data-i18n="nav.service"></a>
+      <a href="#payment" data-i18n="pay.eyebrow"></a>
+      <a href="#about" data-i18n="nav.about"></a>
+      <a href="#contact" data-i18n="nav.contact"></a>
+    </div>
+  </div>
+</header>
+
+<section class="hero" id="home">
+  <div class="hero__bg"></div>
+  <div class="container hero__inner">
+    <p class="eyebrow reveal" data-i18n="hero.eyebrow"></p>
+    <h1 class="reveal" data-i18n-html="hero.title"></h1>
+    <p class="hero__sub reveal" data-i18n="hero.sub"></p>
+    <div class="hero__actions reveal">
+      <a href="#catalog" class="btn" data-i18n="hero.catalogBtn"></a>
+      <a href="#rent" class="btn btn--ghost" data-i18n="hero.rentBtn"></a>
+    </div>
+    <div class="hero__stats reveal">
+      <div><strong data-count="12">0</strong><span data-i18n="hero.stat1"></span></div>
+      <div><strong data-count="850">0</strong><span data-i18n="hero.stat2"></span></div>
+      <div><strong data-count="24">0</strong><span data-i18n="hero.stat3"></span></div>
+    </div>
+  </div>
+</section>
+
+<section class="usp">
+  <div class="container usp__grid">
+    <div class="usp__item reveal"><strong data-i18n="usp1.t"></strong><span data-i18n="usp1.d"></span></div>
+    <div class="usp__item reveal"><strong data-i18n="usp2.t"></strong><span data-i18n="usp2.d"></span></div>
+    <div class="usp__item reveal"><strong data-i18n="usp3.t"></strong><span data-i18n="usp3.d"></span></div>
+    <div class="usp__item reveal"><strong data-i18n="usp4.t"></strong><span data-i18n="usp4.d"></span></div>
+  </div>
+</section>
+
+<section class="section cats" id="categories">
+  <div class="container">
+    <div class="section__head reveal">
+      <p class="eyebrow" data-i18n="cats.eyebrow"></p>
+      <h2 data-i18n="cats.title"></h2>
+    </div>
+    <div class="cats__grid">
+      <a class="cat reveal" href="#catalog" data-jump="machines">
+        <img src="https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?auto=format&fit=crop&w=700&q=80" alt="" loading="lazy">
+        <div><h3 data-i18n="cat.machines"></h3><span data-i18n="cats.machinesD"></span></div>
+      </a>
+      <a class="cat reveal" href="#catalog" data-jump="beans">
+        <img src="https://images.unsplash.com/photo-1442550528053-c431ecb55509?auto=format&fit=crop&w=700&q=80" alt="" loading="lazy">
+        <div><h3 data-i18n="cat.beans"></h3><span data-i18n="cats.beansD"></span></div>
+      </a>
+      <a class="cat reveal" href="#catalog" data-jump="packed">
+        <img src="https://images.unsplash.com/photo-1559525839-b184a4d698c7?auto=format&fit=crop&w=700&q=80" alt="" loading="lazy">
+        <div><h3 data-i18n="cat.packed"></h3><span data-i18n="cats.packedD"></span></div>
+      </a>
+      <a class="cat reveal" href="#catalog" data-jump="accessories">
+        <img src="https://images.unsplash.com/photo-1587734195503-904fca47e0e9?auto=format&fit=crop&w=700&q=80" alt="" loading="lazy">
+        <div><h3 data-i18n="cat.accessories"></h3><span data-i18n="cats.accessoriesD"></span></div>
+      </a>
+      <a class="cat reveal" href="#rent">
+        <img src="https://images.unsplash.com/photo-1521302080334-4bebac2763a6?auto=format&fit=crop&w=700&q=80" alt="" loading="lazy">
+        <div><h3 data-i18n="cats.rent"></h3><span data-i18n="cats.rentD"></span></div>
+      </a>
+      <a class="cat reveal" href="#service">
+        <img src="https://images.unsplash.com/photo-1610889556528-9a770e32642f?auto=format&fit=crop&w=700&q=80" alt="" loading="lazy">
+        <div><h3 data-i18n="cats.repair"></h3><span data-i18n="cats.repairD"></span></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="section catalog" id="catalog">
+  <div class="container">
+    <div class="section__head reveal">
+      <p class="eyebrow" data-i18n="catalog.eyebrow"></p>
+      <h2 data-i18n="catalog.title"></h2>
+    </div>
+    <div class="catalog__bar reveal">
+      <div class="tabs" id="tabs">
+        <button class="tab is-active" data-cat="all" data-i18n="catalog.all"></button>
+        <button class="tab" data-cat="machines" data-i18n="cat.machines"></button>
+        <button class="tab" data-cat="beans" data-i18n="cat.beans"></button>
+        <button class="tab" data-cat="packed" data-i18n="cat.packed"></button>
+        <button class="tab" data-cat="accessories" data-i18n="cat.accessories"></button>
+      </div>
+      <select id="sort" aria-label="Sort">
+        <option value="popular" data-i18n="sort.popular"></option>
+        <option value="asc" data-i18n="sort.asc"></option>
+        <option value="desc" data-i18n="sort.desc"></option>
+        <option value="name" data-i18n="sort.name"></option>
+      </select>
+    </div>
+    <p class="catalog__info" id="catalogInfo"></p>
+    <div class="product-grid" id="productGrid"></div>
+  </div>
+</section>
+
+<section class="section rent" id="rent">
+  <div class="container">
+    <div class="section__head reveal">
+      <p class="eyebrow" data-i18n="rent.eyebrow"></p>
+      <h2 data-i18n="rent.title"></h2>
+      <p class="muted" data-i18n="rent.sub"></p>
+    </div>
+    <div class="plans">
+      <div class="plan reveal">
+        <h3 data-i18n="rent.p1"></h3>
+        <p class="plan__price"><span data-i18n="rent.p1price"></span> <span data-i18n="rent.perMonth"></span></p>
+        <ul class="ticks">
+          <li data-i18n="rent.p1l1"></li><li data-i18n="rent.p1l2"></li><li data-i18n="rent.p1l3"></li><li data-i18n="rent.p1l4"></li>
+        </ul>
+        <button class="btn btn--ghost-dark" data-rent="Ofis / Офис" data-i18n="rent.cta"></button>
+      </div>
+      <div class="plan plan--featured reveal">
+        <span class="plan__badge" data-i18n="rent.popular"></span>
+        <h3 data-i18n="rent.p2"></h3>
+        <p class="plan__price"><span data-i18n="rent.p2price"></span> <span data-i18n="rent.perMonth"></span></p>
+        <ul class="ticks">
+          <li data-i18n="rent.p2l1"></li><li data-i18n="rent.p2l2"></li><li data-i18n="rent.p2l3"></li><li data-i18n="rent.p2l4"></li>
+        </ul>
+        <button class="btn" data-rent="Kafe / Restoran" data-i18n="rent.cta"></button>
+      </div>
+      <div class="plan reveal">
+        <h3 data-i18n="rent.p3"></h3>
+        <p class="plan__price"><span data-i18n="rent.p3price"></span> <span data-i18n="rent.perDay"></span></p>
+        <ul class="ticks">
+          <li data-i18n="rent.p3l1"></li><li data-i18n="rent.p3l2"></li><li data-i18n="rent.p3l3"></li><li data-i18n="rent.p3l4"></li>
+        </ul>
+        <button class="btn btn--ghost-dark" data-rent="Tadbir / Мероприятие" data-i18n="rent.cta"></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section service" id="service">
+  <div class="container service__grid">
+    <div class="reveal">
+      <p class="eyebrow" data-i18n="srv.eyebrow"></p>
+      <h2 data-i18n="srv.title"></h2>
+      <p class="muted" data-i18n="srv.sub"></p>
+      <div class="steps">
+        <div class="step"><strong>01</strong><span data-i18n="srv.s1"></span></div>
+        <div class="step"><strong>02</strong><span data-i18n="srv.s2"></span></div>
+        <div class="step"><strong>03</strong><span data-i18n="srv.s3"></span></div>
+        <div class="step"><strong>04</strong><span data-i18n="srv.s4"></span></div>
+      </div>
+      <button class="btn" id="serviceCta" data-i18n="srv.cta"></button>
+    </div>
+    <div class="pricelist reveal">
+      <h3 data-i18n="srv.priceTitle"></h3>
+      <ul>
+        <li><span data-i18n="srv.r1"></span><b data-i18n="srv.r1v"></b></li>
+        <li><span data-i18n="srv.r2"></span><b data-i18n="srv.r2v"></b></li>
+        <li><span data-i18n="srv.r3"></span><b data-i18n="srv.r3v"></b></li>
+        <li><span data-i18n="srv.r4"></span><b data-i18n="srv.r4v"></b></li>
+        <li><span data-i18n="srv.r5"></span><b data-i18n="srv.r5v"></b></li>
+        <li><span data-i18n="srv.r6"></span><b data-i18n="srv.r6v"></b></li>
+      </ul>
+      <p class="muted small" data-i18n="srv.note"></p>
+    </div>
+  </div>
+</section>
+
+<section class="section payment" id="payment">
+  <div class="container">
+    <div class="section__head reveal">
+      <p class="eyebrow" data-i18n="pay.eyebrow"></p>
+      <h2 data-i18n="pay.title"></h2>
+    </div>
+    <div class="pay__grid">
+      <div class="pay__card reveal"><h3 data-i18n="pay.c1"></h3><p data-i18n="pay.c1d"></p><div class="pay__logos"><span>Payme</span><span>Click</span><span>Uzum</span></div></div>
+      <div class="pay__card reveal"><h3 data-i18n="pay.c2"></h3><p data-i18n="pay.c2d"></p><div class="pay__logos"><span>Uzum Nasiya</span><span>12 oy</span></div></div>
+      <div class="pay__card reveal"><h3 data-i18n="pay.c3"></h3><p data-i18n="pay.c3d"></p><div class="pay__logos"><span>Cash</span><span>POS</span></div></div>
+      <div class="pay__card reveal"><h3 data-i18n="pay.c4"></h3><p data-i18n="pay.c4d"></p><div class="pay__logos"><span>B2B</span><span>NDS</span></div></div>
+    </div>
+    <p class="muted pay__note reveal" data-i18n="pay.delivery"></p>
+  </div>
+</section>
+
+<section class="brands">
+  <div class="container">
+    <p class="brands__title" data-i18n="brands.title"></p>
+    <div class="brands__row">
+      <span>ASTORIA</span><span>Dr.COFFEE</span><span>WMF</span><span>SCHAERER</span><span>BIANCHI</span><span>DELONGHI</span><span>SAECO</span><span>JACOBS</span>
+    </div>
+  </div>
+</section>
+
+<section class="section about" id="about">
+  <div class="container about__grid">
+    <div class="about__media reveal">
+      <img src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=900&q=80" alt="Master Coffee" loading="lazy">
+      <div class="about__badge"><strong>850+</strong><span data-i18n-html="about.badge"></span></div>
+    </div>
+    <div class="about__text reveal">
+      <p class="eyebrow" data-i18n="about.eyebrow"></p>
+      <h2 data-i18n-html="about.title"></h2>
+      <p data-i18n="about.p"></p>
+      <ul class="ticks">
+        <li data-i18n="about.l1"></li><li data-i18n="about.l2"></li><li data-i18n="about.l3"></li><li data-i18n="about.l4"></li>
+      </ul>
+      <a href="#contact" class="link-arrow" data-i18n="about.link"></a>
+    </div>
+  </div>
+</section>
+
+<section class="section reviews" id="reviews">
+  <div class="container">
+    <div class="section__head reveal">
+      <p class="eyebrow" data-i18n="rev.eyebrow"></p>
+      <h2 data-i18n="rev.title"></h2>
+    </div>
+    <div class="reviews__grid">
+      <figure class="review reveal"><div class="stars">★★★★★</div><blockquote data-i18n="rev.q1"></blockquote><figcaption data-i18n="rev.a1"></figcaption></figure>
+      <figure class="review reveal"><div class="stars">★★★★★</div><blockquote data-i18n="rev.q2"></blockquote><figcaption data-i18n="rev.a2"></figcaption></figure>
+      <figure class="review reveal"><div class="stars">★★★★☆</div><blockquote data-i18n="rev.q3"></blockquote><figcaption data-i18n="rev.a3"></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="section contact" id="contact">
+  <div class="container contact__grid">
+    <div class="reveal">
+      <p class="eyebrow" data-i18n="form.eyebrow"></p>
+      <h2 id="formTitle" data-i18n="form.title"></h2>
+      <p class="muted" data-i18n="form.sub"></p>
+      <form id="leadForm" novalidate>
+        <div class="row">
+          <label><span data-i18n="form.name"></span><input type="text" name="name" data-i18n-ph="form.namePh" required></label>
+          <label><span data-i18n="form.phone"></span><input type="tel" name="phone" placeholder="+998 90 123 45 67" required></label>
+        </div>
+        <div class="row">
+          <label><span data-i18n="form.topic"></span>
+            <select name="topic" id="topicSelect">
+              <option value="buy" data-i18n="topic.buy"></option>
+              <option value="coffee" data-i18n="topic.coffee"></option>
+              <option value="acc" data-i18n="topic.acc"></option>
+              <option value="rent" data-i18n="topic.rent"></option>
+              <option value="service" data-i18n="topic.service"></option>
+              <option value="wholesale" data-i18n="topic.wholesale"></option>
+            </select>
+          </label>
+          <label><span data-i18n="form.company"></span><input type="text" name="company" data-i18n-ph="form.companyPh"></label>
+        </div>
+        <label><span data-i18n="form.note"></span><textarea name="note" rows="3" data-i18n-ph="form.notePh"></textarea></label>
+        <button class="btn" type="submit" id="submitBtn" data-i18n="form.submit"></button>
+        <p class="form-msg" id="formMsg"></p>
+      </form>
+    </div>
+    <aside class="info reveal">
+      <div class="info__card"><h3 data-i18n="info.addr"></h3><p data-site="address"></p></div>
+      <div class="info__card"><h3 data-i18n="info.hours"></h3><p data-site="hours"></p></div>
+      <div class="info__card"><h3 data-i18n="info.contact"></h3>
+        <p><a href="tel:+998901234567" data-site="phone"></a><br>
+           <a href="mailto:info@mastercoffee.uz" data-site="email"></a><br>
+           <a href="#" data-site="telegram" target="_blank" rel="noopener"></a></p>
+      </div>
+      <div class="info__map"><iframe title="Map" src="https://www.openstreetmap.org/export/embed.html?bbox=69.27%2C41.29%2C69.31%2C41.32&amp;layer=mapnik" loading="lazy"></iframe></div>
+    </aside>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container footer__grid">
+    <div>
+      <div class="logo logo--light"><span class="logo__mark">M</span><span class="logo__text">Master<em>Coffee</em></span></div>
+      <p class="footer__desc" data-i18n="footer.desc"></p>
+    </div>
+    <div>
+      <h4 data-i18n="footer.catalog"></h4>
+      <a href="#catalog" data-jump="machines" data-i18n="cat.machines"></a>
+      <a href="#catalog" data-jump="beans" data-i18n="cat.beans"></a>
+      <a href="#catalog" data-jump="packed" data-i18n="cat.packed"></a>
+      <a href="#catalog" data-jump="accessories" data-i18n="cat.accessories"></a>
+    </div>
+    <div>
+      <h4 data-i18n="footer.services"></h4>
+      <a href="#rent" data-i18n="nav.rent"></a>
+      <a href="#service" data-i18n="nav.repair"></a>
+      <a href="#service" data-i18n="footer.contract"></a>
+      <a href="#payment" data-i18n="pay.eyebrow"></a>
+    </div>
+    <div>
+      <h4 data-i18n="footer.contact"></h4>
+      <a href="tel:+998901234567" data-site="phone"></a>
+      <a href="mailto:info@mastercoffee.uz" data-site="email"></a>
+      <a href="#contact" data-site="addressShort"></a>
+    </div>
+  </div>
+  <div class="container footer__bottom">
+    <p>© <span id="year"></span> Master Coffee. <span data-i18n="footer.rights"></span></p>
+    <div class="socials">
+      <a href="#" data-site="instagram" target="_blank" rel="noopener">Instagram</a>
+      <a href="#" data-site="telegramLink" target="_blank" rel="noopener">Telegram</a>
+      <a href="#" data-site="facebook" target="_blank" rel="noopener">Facebook</a>
+    </div>
+  </div>
+</footer>
+
+<div class="drawer-overlay" id="overlay"></div>
+
+<aside class="drawer" id="cartDrawer" aria-hidden="true">
+  <div class="drawer__head">
+    <h3 data-i18n="cart.title"></h3>
+    <button class="drawer__close" id="cartClose" aria-label="Close">×</button>
+  </div>
+  <div class="drawer__body" id="cartItems"></div>
+  <div class="drawer__foot">
+    <div class="drawer__total"><span data-i18n="cart.total"></span><strong id="cartTotal">0</strong></div>
+    <button class="btn" id="checkoutBtn" data-i18n="cart.checkout"></button>
+    <p class="small muted" data-i18n="cart.note"></p>
+  </div>
+</aside>
+
+<div class="modal" id="productModal" aria-hidden="true">
+  <div class="modal__box" id="modalBox"></div>
+</div>
+
+<a class="fab" href="tel:+998901234567" data-site="phoneLink" aria-label="Call">☎</a>
+
+<script src="config.js"></script>
+<script src="i18n.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
