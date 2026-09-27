@@ -9,7 +9,7 @@ window.SITE = {
     ru: "Ташкент, улица Амира Темура 42, Мирабадский район"
   },
   hours: { uz: "Dush–Shan: 09:00 – 19:00", ru: "Пн–Сб: 09:00 – 19:00" },
-  telegramUser: "mastercoffee_uz",
+  telegramUser: "mastercoffeeprice",
   instagram: "https://instagram.com/",
   facebook: "https://facebook.com/",
 
