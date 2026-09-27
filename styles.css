@@ -55,6 +55,8 @@ section[id]{scroll-margin-top:var(--nav-h)}
 .nav__inner{display:flex;align-items:center;gap:1.5rem;padding:.9rem 0}
 .logo{display:flex;align-items:center;gap:.6rem;font-weight:600;flex-shrink:0}
 .logo__mark{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--brand);color:#fff;font-family:"Playfair Display",serif;font-size:1.25rem}
+.logo__img{height:38px;width:auto;display:block}
+.logo--light .logo__img{height:42px}
 .logo__text{font-family:"Playfair Display",serif;font-size:1.2rem}
 .logo__text em{font-style:normal;color:var(--brand)}
 .logo--light .logo__text{color:#fff}
