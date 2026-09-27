@@ -1,8 +1,8 @@
 /* Sayt sozlamalari — bu yerdagi qiymatlarni o'zingiznikiga almashtiring */
 window.SITE = {
   name: "Master Coffee",
-  phone: "+998 90 123 45 67",
-  phoneHref: "+998901234567",
+  phone: "+998 99 463 17 13",
+  phoneHref: "+998994631713",
   email: "info@mastercoffee.uz",
   address: {
     uz: "Toshkent, Amir Temur ko'chasi 42, Mirobod tumani",
