@@ -10,7 +10,7 @@ window.SITE = {
   },
   hours: { uz: "Dush–Shan: 09:00 – 19:00", ru: "Пн–Сб: 09:00 – 19:00" },
   telegramUser: "mastercoffeeprice",
-  instagram: "https://instagram.com/",
+  instagram: "https://www.instagram.com/mastercoffee.uz",
   facebook: "https://facebook.com/",
 
   /* Buyurtmalarni Telegram botga yuborish.
