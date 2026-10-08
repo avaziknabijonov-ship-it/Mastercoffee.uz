@@ -131,7 +131,7 @@ def validate_products(items: list) -> list:
 
 @app.get("/healthz")
 def healthz():
-    return {"ok": True}
+    return {"status": "ok"}
 
 
 @app.get("/data/products.json")
@@ -143,7 +143,7 @@ def get_products():
 @app.post("/api/admin/login")
 def admin_login(x_admin_password: str | None = Header(default=None)):
     require_admin(x_admin_password)
-    return {"ok": True}
+    return {"status": "ok"}
 
 
 @app.put("/api/products")

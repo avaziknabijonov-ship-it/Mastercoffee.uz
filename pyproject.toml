@@ -1,15 +1,18 @@
-[tool.poetry]
-name = "master-coffee"
+[project]
+name = "app"
 version = "0.1.0"
 description = "Master Coffee website + API"
-authors = ["Master Coffee"]
+authors = [{ name = "Master Coffee" }]
+readme = "README.md"
+requires-python = ">=3.10,<4.0"
+dependencies = [
+    "fastapi[standard] (==0.115.6)",
+    "python-multipart (==0.0.19)",
+]
+
+[tool.poetry]
 packages = [{ include = "app" }]
 
-[tool.poetry.dependencies]
-python = "^3.10"
-fastapi = {extras = ["standard"], version = "0.115.6"}
-python-multipart = "0.0.19"
-
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
