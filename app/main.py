@@ -19,6 +19,7 @@ from fastapi.responses import (
     Response,
 )
 from pydantic import BaseModel
+from starlette.routing import Route
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -72,7 +73,9 @@ ALLOWED_IMG = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 MAX_UPLOAD = 8 * 1024 * 1024
 _lock = threading.Lock()
 
-app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
+app = FastAPI()
+DOC_PATHS = {"/docs", "/docs/oauth2-redirect", "/redoc", "/openapi.json"}
+app.router.routes = [r for r in app.router.routes if not (isinstance(r, Route) and r.path in DOC_PATHS)]
 
 
 def read_products() -> list:
