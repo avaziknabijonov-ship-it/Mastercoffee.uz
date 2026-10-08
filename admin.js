@@ -1,4 +1,4 @@
-const CATS = { machines:"Kofe mashinalari", bar:"Bar uskunalari", beans:"Kofe donlari", packed:"Qadoqlangan kofe", accessories:"Aksessuarlar" };
+let CATS = {}, SITE = null, siteDirty = false;
 let PW = sessionStorage.getItem("mc_admin") || "";
 let items = [], cur = -1, dirty = false;
 const $ = id => document.getElementById(id);
@@ -12,6 +12,7 @@ async function login(pw){
   sessionStorage.setItem("mc_admin", PW);
   $("loginView").hidden = true; $("appView").hidden = false;
   items = await (await fetch("/api/products", { cache:"no-store" })).json();
+  await loadSite();
   renderList();
   return "";
 }
@@ -26,6 +27,8 @@ document.querySelectorAll("[data-tab]").forEach(b => b.onclick = async () => {
   document.querySelectorAll("[data-tab]").forEach(x => x.classList.toggle("on", x === b));
   $("productsTab").hidden = b.dataset.tab !== "products";
   $("leadsTab").hidden = b.dataset.tab !== "leads";
+  $("siteTab").hidden = b.dataset.tab !== "site";
+  if(b.dataset.tab === "site") renderSite();
   if(b.dataset.tab === "leads") loadLeads();
 });
 
@@ -134,5 +137,110 @@ $("saveAll").onclick = async () => {
   else { const d = await r.json().catch(() => ({})); $("saveMsg").className = "msg err"; $("saveMsg").textContent = "Xato: " + (d.detail || r.status); }
 };
 
-window.addEventListener("beforeunload", e => { if(dirty){ e.preventDefault(); e.returnValue = ""; } });
+/* ---------- site sections ---------- */
+async function loadSite(){
+  SITE = await (await fetch("/api/site", { cache:"no-store" })).json();
+  syncCats();
+}
+const syncCats = () => { CATS = Object.fromEntries(SITE.categories.map(c => [c.id, c.name.uz || c.id])); };
+function setSiteDirty(v){ siteDirty = v; $("siteMsg").className = "msg" + (v ? " err" : ""); $("siteMsg").textContent = v ? "Saqlanmagan o'zgarishlar bor" : ""; }
+
+const linesToBi = txt => txt.split("\n").map(l => l.split("|").map(x => x.trim())).filter(a => a[0]).map(([u,r]) => ({ uz:u, ru:r||u }));
+const biToLines = arr => (arr||[]).map(x => `${x.uz||""} | ${x.ru||""}`).join("\n");
+const linesToItems = txt => txt.split("\n").map(l => l.split("|").map(x => x.trim())).filter(a => a[0])
+  .map(([nu,nr,pu,pr]) => ({ name:{ uz:nu, ru:nr||nu }, price:{ uz:pu||"", ru:pr||pu||"" } }));
+const itemsToLines = arr => (arr||[]).map(i => [i.name?.uz, i.name?.ru, i.price?.uz, i.price?.ru].map(x => x||"").join(" | ")).join("\n");
+
+const fld = (label, path, val, type="text") => `<div><label>${label}</label><input data-p="${path}" type="${type}" value="${esc(val)}"></div>`;
+const area = (label, path, val, h=90) => `<label>${label}</label><textarea data-p="${path}" style="min-height:${h}px">${esc(val)}</textarea>`;
+const imgCtl = (path, src) => `<label>Rasm</label><div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap">
+  <img class="thumb" src="${esc(src||"")}" alt=""><label class="btn" style="margin:0;color:#fff">Rasm yuklash<input type="file" accept="image/*" data-up="${path}" hidden></label>
+  <button class="ghost" data-url="${path}">Havola</button></div>`;
+
+function getPath(path){ return path.split(".").reduce((o,k) => o?.[k], SITE); }
+function setPath(path, val){
+  const ks = path.split("."), last = ks.pop();
+  const o = ks.reduce((o,k) => (o[k] ??= {}), SITE);
+  o[last] = val;
+}
+
+function renderSite(){
+  if(!SITE) return;
+  $("catsEd").innerHTML = SITE.categories.map((c,i) => `<div class="card">
+    <div class="row3">${fld("ID", `categories.${i}.id`, c.id)}${fld("Nomi (UZ)", `categories.${i}.name.uz`, c.name?.uz)}${fld("Название (RU)", `categories.${i}.name.ru`, c.name?.ru)}</div>
+    <div class="row">${fld("Qisqa tavsif (UZ)", `categories.${i}.desc.uz`, c.desc?.uz)}${fld("Описание (RU)", `categories.${i}.desc.ru`, c.desc?.ru)}</div>
+    ${imgCtl(`categories.${i}.image`, c.image)}
+    <div class="bar"><button class="ghost" data-mv="${i}:-1">↑</button><button class="ghost" data-mv="${i}:1">↓</button>
+      <span style="flex:1"></span><small class="hint">${items.filter(p => p.cat === c.id).length} ta mahsulot</small><button class="danger" data-delcat="${i}">O'chirish</button></div>
+  </div>`).join("");
+  const r = SITE.rent;
+  $("rentEd").innerHTML = `<div class="card">
+    <div class="row">${fld("Karta nomi (UZ)", "rent.title.uz", r.title?.uz)}${fld("Название карточки (RU)", "rent.title.ru", r.title?.ru)}</div>
+    <div class="row">${fld("Karta tavsifi (UZ)", "rent.desc.uz", r.desc?.uz)}${fld("Описание карточки (RU)", "rent.desc.ru", r.desc?.ru)}</div>
+    ${imgCtl("rent.image", r.image)}</div>` +
+    r.plans.map((p,i) => `<div class="card">
+    <div class="row">${fld("Tarif nomi (UZ)", `rent.plans.${i}.name.uz`, p.name?.uz)}${fld("Тариф (RU)", `rent.plans.${i}.name.ru`, p.name?.ru)}</div>
+    <div class="row3">${fld("Narx (masalan 1 200 000)", `rent.plans.${i}.price`, p.price)}${fld("Davr (UZ), masalan so'm/oy", `rent.plans.${i}.period.uz`, p.period?.uz)}${fld("Период (RU), напр. сум/мес", `rent.plans.${i}.period.ru`, p.period?.ru)}</div>
+    ${area("Imkoniyatlar — har qatorda: UZ | RU", `rent.plans.${i}.features`, biToLines(p.features))}
+    <div class="bar"><label style="margin:0;display:flex;gap:.4rem;align-items:center"><input type="checkbox" style="width:auto" data-feat="${i}"${p.featured ? " checked" : ""}> "Ommabop" belgisi</label>
+      <span style="flex:1"></span><button class="danger" data-delplan="${i}">Tarifni o'chirish</button></div>
+  </div>`).join("");
+  const s = SITE.service;
+  $("srvEd").innerHTML = `<div class="card">
+    <div class="row">${fld("Karta nomi (UZ)", "service.title.uz", s.title?.uz)}${fld("Название карточки (RU)", "service.title.ru", s.title?.ru)}</div>
+    <div class="row">${fld("Karta tavsifi (UZ)", "service.desc.uz", s.desc?.uz)}${fld("Описание карточки (RU)", "service.desc.ru", s.desc?.ru)}</div>
+    ${imgCtl("service.image", s.image)}
+    ${area("Xizmatlar va narxlar — har qatorda: Xizmat UZ | Услуга RU | Narx UZ | Цена RU", "service.items", itemsToLines(s.items), 160)}
+    <div class="row">${fld("Izoh (UZ)", "service.note.uz", s.note?.uz)}${fld("Примечание (RU)", "service.note.ru", s.note?.ru)}</div>
+  </div>`;
+}
+
+$("siteTab").addEventListener("input", e => {
+  const el = e.target, path = el.dataset.p;
+  if(path){
+    if(path.endsWith(".features")) setPath(path, linesToBi(el.value));
+    else if(path === "service.items") setPath(path, linesToItems(el.value));
+    else setPath(path, path.endsWith(".id") ? el.value.trim() : el.value);
+    setSiteDirty(true);
+  } else if(el.dataset.feat !== undefined){
+    SITE.rent.plans[+el.dataset.feat].featured = el.checked; setSiteDirty(true);
+  }
+});
+$("siteTab").addEventListener("change", async e => {
+  const path = e.target.dataset.up;
+  if(!path) return;
+  const fd = new FormData(); fd.append("file", e.target.files[0]);
+  const r = await api("/api/upload", { method:"POST", body:fd });
+  if(!r.ok) return alert("Yuklab bo'lmadi");
+  setPath(path, (await r.json()).url); setSiteDirty(true); renderSite();
+});
+$("siteTab").addEventListener("click", e => {
+  const b = e.target.closest("button");
+  if(!b) return;
+  const d = b.dataset;
+  if(d.url){ const u = prompt("Rasm havolasi (https://...)", getPath(d.url) || ""); if(u){ setPath(d.url, u.trim()); setSiteDirty(true); renderSite(); } }
+  else if(d.mv){ const [i,dir] = d.mv.split(":").map(Number), j = i + dir, c = SITE.categories;
+    if(j >= 0 && j < c.length){ [c[i], c[j]] = [c[j], c[i]]; setSiteDirty(true); renderSite(); } }
+  else if(d.delcat){ const c = SITE.categories[+d.delcat];
+    if(items.some(p => p.cat === c.id)) return alert("Bu yo'nalishda mahsulotlar bor. Avval ularni boshqa yo'nalishga o'tkazing.");
+    if(confirm(`"${c.name.uz}" o'chirilsinmi?`)){ SITE.categories.splice(+d.delcat,1); setSiteDirty(true); renderSite(); } }
+  else if(d.delplan){ if(confirm("Tarif o'chirilsinmi?")){ SITE.rent.plans.splice(+d.delplan,1); setSiteDirty(true); renderSite(); } }
+});
+$("addCat").onclick = () => {
+  SITE.categories.push({ id:"yangi-" + Date.now().toString(36), name:{ uz:"Yangi yo'nalish", ru:"Новое направление" }, desc:{ uz:"", ru:"" }, image:"" });
+  setSiteDirty(true); renderSite();
+};
+$("addPlan").onclick = () => {
+  SITE.rent.plans.push({ name:{ uz:"Yangi tarif", ru:"Новый тариф" }, price:"", period:{ uz:"so'm/oy", ru:"сум/мес" }, featured:false, features:[] });
+  setSiteDirty(true); renderSite();
+};
+$("saveSite").onclick = async () => {
+  $("saveSite").disabled = true;
+  const r = await api("/api/site", { method:"PUT", headers:{ "Content-Type":"application/json" }, body:JSON.stringify(SITE) });
+  $("saveSite").disabled = false;
+  if(r.ok){ setSiteDirty(false); syncCats(); renderList(); $("siteMsg").className = "msg ok"; $("siteMsg").textContent = "Saqlandi ✓"; }
+  else { const d = await r.json().catch(() => ({})); $("siteMsg").className = "msg err"; $("siteMsg").textContent = "Xato: " + (d.detail || r.status); }
+};
+
+window.addEventListener("beforeunload", e => { if(dirty || siteDirty){ e.preventDefault(); e.returnValue = ""; } });
 if(PW) login(PW).then(m => { if(m) $("loginMsg").textContent = m; });

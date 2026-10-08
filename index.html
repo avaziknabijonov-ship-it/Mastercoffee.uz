@@ -78,11 +78,6 @@
   </div>
   <div class="catnav">
     <div class="container catnav__inner" id="catnav">
-      <a href="#catalog" data-jump="machines" data-i18n="cat.machines"></a>
-      <a href="#catalog" data-jump="bar" data-i18n="cat.bar"></a>
-      <a href="#catalog" data-jump="beans" data-i18n="cat.beans"></a>
-      <a href="#catalog" data-jump="packed" data-i18n="cat.packed"></a>
-      <a href="#catalog" data-jump="accessories" data-i18n="cat.accessories"></a>
       <a href="#rent" data-i18n="nav.rent"></a>
       <a href="#service" data-i18n="nav.service"></a>
       <a href="#payment" data-i18n="pay.eyebrow"></a>
@@ -125,36 +120,7 @@
       <p class="eyebrow" data-i18n="cats.eyebrow"></p>
       <h2 data-i18n="cats.title"></h2>
     </div>
-    <div class="cats__grid">
-      <a class="cat reveal" href="#catalog" data-jump="machines">
-        <img src="assets/products/ks535-1.jpg" alt="" loading="lazy">
-        <div><h3 data-i18n="cat.machines"></h3><span data-i18n="cats.machinesD"></span></div>
-      </a>
-      <a class="cat reveal" href="#catalog" data-jump="bar">
-        <img src="assets/products/ice-machine-1.jpg" alt="" loading="lazy">
-        <div><h3 data-i18n="cat.bar"></h3><span data-i18n="cats.barD"></span></div>
-      </a>
-      <a class="cat reveal" href="#catalog" data-jump="beans">
-        <img src="https://images.unsplash.com/photo-1442550528053-c431ecb55509?auto=format&fit=crop&w=700&q=80" alt="" loading="lazy">
-        <div><h3 data-i18n="cat.beans"></h3><span data-i18n="cats.beansD"></span></div>
-      </a>
-      <a class="cat reveal" href="#catalog" data-jump="packed">
-        <img src="https://images.unsplash.com/photo-1559525839-b184a4d698c7?auto=format&fit=crop&w=700&q=80" alt="" loading="lazy">
-        <div><h3 data-i18n="cat.packed"></h3><span data-i18n="cats.packedD"></span></div>
-      </a>
-      <a class="cat reveal" href="#catalog" data-jump="accessories">
-        <img src="https://images.unsplash.com/photo-1587734195503-904fca47e0e9?auto=format&fit=crop&w=700&q=80" alt="" loading="lazy">
-        <div><h3 data-i18n="cat.accessories"></h3><span data-i18n="cats.accessoriesD"></span></div>
-      </a>
-      <a class="cat reveal" href="#rent">
-        <img src="https://images.unsplash.com/photo-1521302080334-4bebac2763a6?auto=format&fit=crop&w=700&q=80" alt="" loading="lazy">
-        <div><h3 data-i18n="cats.rent"></h3><span data-i18n="cats.rentD"></span></div>
-      </a>
-      <a class="cat reveal" href="#service">
-        <img src="https://images.unsplash.com/photo-1610889556528-9a770e32642f?auto=format&fit=crop&w=700&q=80" alt="" loading="lazy">
-        <div><h3 data-i18n="cats.repair"></h3><span data-i18n="cats.repairD"></span></div>
-      </a>
-    </div>
+    <div class="cats__grid" id="catsGrid"></div>
   </div>
 </section>
 
@@ -167,11 +133,6 @@
     <div class="catalog__bar reveal">
       <div class="tabs" id="tabs">
         <button class="tab is-active" data-cat="all" data-i18n="catalog.all"></button>
-        <button class="tab" data-cat="machines" data-i18n="cat.machines"></button>
-        <button class="tab" data-cat="bar" data-i18n="cat.bar"></button>
-        <button class="tab" data-cat="beans" data-i18n="cat.beans"></button>
-        <button class="tab" data-cat="packed" data-i18n="cat.packed"></button>
-        <button class="tab" data-cat="accessories" data-i18n="cat.accessories"></button>
       </div>
       <select id="sort" aria-label="Sort">
         <option value="popular" data-i18n="sort.popular"></option>
@@ -192,33 +153,7 @@
       <h2 data-i18n="rent.title"></h2>
       <p class="muted" data-i18n="rent.sub"></p>
     </div>
-    <div class="plans">
-      <div class="plan reveal">
-        <h3 data-i18n="rent.p1"></h3>
-        <p class="plan__price"><span data-i18n="rent.p1price"></span> <span data-i18n="rent.perMonth"></span></p>
-        <ul class="ticks">
-          <li data-i18n="rent.p1l1"></li><li data-i18n="rent.p1l2"></li><li data-i18n="rent.p1l3"></li><li data-i18n="rent.p1l4"></li>
-        </ul>
-        <button class="btn btn--ghost-dark" data-rent="Ofis / Офис" data-i18n="rent.cta"></button>
-      </div>
-      <div class="plan plan--featured reveal">
-        <span class="plan__badge" data-i18n="rent.popular"></span>
-        <h3 data-i18n="rent.p2"></h3>
-        <p class="plan__price"><span data-i18n="rent.p2price"></span> <span data-i18n="rent.perMonth"></span></p>
-        <ul class="ticks">
-          <li data-i18n="rent.p2l1"></li><li data-i18n="rent.p2l2"></li><li data-i18n="rent.p2l3"></li><li data-i18n="rent.p2l4"></li>
-        </ul>
-        <button class="btn" data-rent="Kafe / Restoran" data-i18n="rent.cta"></button>
-      </div>
-      <div class="plan reveal">
-        <h3 data-i18n="rent.p3"></h3>
-        <p class="plan__price"><span data-i18n="rent.p3price"></span> <span data-i18n="rent.perDay"></span></p>
-        <ul class="ticks">
-          <li data-i18n="rent.p3l1"></li><li data-i18n="rent.p3l2"></li><li data-i18n="rent.p3l3"></li><li data-i18n="rent.p3l4"></li>
-        </ul>
-        <button class="btn btn--ghost-dark" data-rent="Tadbir / Мероприятие" data-i18n="rent.cta"></button>
-      </div>
-    </div>
+    <div class="plans" id="plans"></div>
   </div>
 </section>
 
@@ -238,15 +173,8 @@
     </div>
     <div class="pricelist reveal">
       <h3 data-i18n="srv.priceTitle"></h3>
-      <ul>
-        <li><span data-i18n="srv.r1"></span><b data-i18n="srv.r1v"></b></li>
-        <li><span data-i18n="srv.r2"></span><b data-i18n="srv.r2v"></b></li>
-        <li><span data-i18n="srv.r3"></span><b data-i18n="srv.r3v"></b></li>
-        <li><span data-i18n="srv.r4"></span><b data-i18n="srv.r4v"></b></li>
-        <li><span data-i18n="srv.r5"></span><b data-i18n="srv.r5v"></b></li>
-        <li><span data-i18n="srv.r6"></span><b data-i18n="srv.r6v"></b></li>
-      </ul>
-      <p class="muted small" data-i18n="srv.note"></p>
+      <ul id="priceList"></ul>
+      <p class="muted small" id="srvNote"></p>
     </div>
   </div>
 </section>
@@ -359,11 +287,7 @@
     </div>
     <div>
       <h4 data-i18n="footer.catalog"></h4>
-      <a href="#catalog" data-jump="machines" data-i18n="cat.machines"></a>
-      <a href="#catalog" data-jump="bar" data-i18n="cat.bar"></a>
-      <a href="#catalog" data-jump="beans" data-i18n="cat.beans"></a>
-      <a href="#catalog" data-jump="packed" data-i18n="cat.packed"></a>
-      <a href="#catalog" data-jump="accessories" data-i18n="cat.accessories"></a>
+      <div id="footCats"></div>
     </div>
     <div>
       <h4 data-i18n="footer.services"></h4>
