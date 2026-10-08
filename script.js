@@ -30,6 +30,7 @@ function applyLang(){
 function applySiteData(){
   const map = {
     phone: CFG.phone,
+    phone2: CFG.phone2,
     email: CFG.email,
     address: tr(CFG.address),
     addressShort: tr(CFG.address),
@@ -40,10 +41,10 @@ function applySiteData(){
     const k = el.dataset.site;
     if(k in map) el.textContent = map[k];
     if(k === "phone" || k === "phoneLink") el.href = "tel:" + CFG.phoneHref;
+    if(k === "phone2") el.href = "tel:" + CFG.phone2Href;
     if(k === "email") el.href = "mailto:" + CFG.email;
     if(k === "telegram" || k === "telegramLink") el.href = "https://t.me/" + CFG.telegramUser;
     if(k === "instagram") el.href = CFG.instagram;
-    if(k === "facebook") el.href = CFG.facebook;
   });
 }
 
