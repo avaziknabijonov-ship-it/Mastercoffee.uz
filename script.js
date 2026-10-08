@@ -1,5 +1,5 @@
 const CFG = window.SITE;
-const CATS = ["machines","beans","packed","accessories"];
+const CATS = ["machines","bar","beans","packed","accessories"];
 
 let lang = localStorage.getItem("mc_lang") || "uz";
 let PRODUCTS = [];
@@ -7,7 +7,8 @@ let state = { cat:"all", q:"", sort:"popular" };
 
 const t = key => (window.I18N[lang] && window.I18N[lang][key]) || key;
 const tr = obj => !obj ? "" : (obj[lang] || obj.uz || "");
-const fmt = n => n.toLocaleString("ru-RU").replace(/\u00a0/g," ") + (lang === "uz" ? " so'm" : " сум");
+const num = n => n.toLocaleString("ru-RU").replace(/\u00a0/g," ");
+const fmt = n => !n ? t("price.ask") : CFG.currency === "USD" ? "$" + num(n) : num(n) + (lang === "uz" ? " so'm" : " сум");
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
 
 /* ---------- i18n ---------- */
@@ -64,7 +65,7 @@ function visible(){
   const q = state.q.trim().toLowerCase();
   if(q) items = items.filter(p =>
     (tr(p.name) + " " + tr(p.desc) + " " + (p.brand||"") + " " + (p.sku||"") + " " + t("cat." + p.cat)).toLowerCase().includes(q));
-  if(state.sort === "asc") items = [...items].sort((a,b) => a.price - b.price);
+  if(state.sort === "asc") items = [...items].sort((a,b) => (a.price || Infinity) - (b.price || Infinity));
   if(state.sort === "desc") items = [...items].sort((a,b) => b.price - a.price);
   if(state.sort === "name") items = [...items].sort((a,b) => tr(a.name).localeCompare(tr(b.name)));
   return items;
@@ -158,6 +159,7 @@ function openProduct(id){
           <button class="btn" data-add="${p.id}">${t("product.add")}</button>
           <a class="btn btn--ghost-dark" href="tel:${CFG.phoneHref}">${CFG.phone}</a>
         </div>
+        <a class="modal__link" href="/p/${encodeURIComponent(p.id)}?lang=${lang}">${t("product.page")} →</a>
       </div>
     </div>
     ${similar.length ? `<div class="similar">
@@ -267,28 +269,12 @@ const msg = document.getElementById("formMsg");
 const submitBtn = document.getElementById("submitBtn");
 
 async function sendLead(payload){
-  const text =
-    `🆕 ${payload.topic}\n` +
-    `👤 ${payload.name}\n` +
-    `📞 ${payload.phone}\n` +
-    (payload.company ? `🏢 ${payload.company}\n` : "") +
-    (payload.note ? `📝 ${payload.note}\n` : "") +
-    (payload.cart ? `🛒 ${payload.cart}\n` : "") +
-    `🌐 ${location.href}`;
-
-  const jobs = [];
-  if(CFG.telegram.enabled && CFG.telegram.botToken && CFG.telegram.chatId){
-    jobs.push(fetch(`https://api.telegram.org/bot${CFG.telegram.botToken}/sendMessage`, {
-      method:"POST", headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({ chat_id: CFG.telegram.chatId, text })
-    }));
-  }
-  if(CFG.webhookUrl){
-    jobs.push(fetch(CFG.webhookUrl, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload) }));
-  }
-  if(!jobs.length) return true;                  // integratsiya sozlanmagan — lokal tasdiq
-  const res = await Promise.allSettled(jobs);
-  return res.some(r => r.status === "fulfilled");
+  if(!CFG.leadEndpoint) return false;
+  const r = await fetch(CFG.leadEndpoint, {
+    method:"POST", headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ ...payload, lang, page: location.href })
+  });
+  return r.ok;
 }
 
 form.addEventListener("submit", async e => {

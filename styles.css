@@ -348,3 +348,11 @@ form .btn{justify-self:start}
   .pay__grid{grid-template-columns:1fr}
   .similar__row{grid-template-columns:1fr 1fr}
 }
+.modal__link{display:inline-block;margin-top:1rem;color:var(--brand);font-weight:600;text-decoration:none}.modal__link:hover{text-decoration:underline}
+.ppage__main{padding:2rem 0 4rem}
+.ppage h1{font-family:"Playfair Display",serif;font-size:2rem;margin:.3rem 0 .6rem}
+.crumbs{font-size:.85rem;color:var(--muted);margin-bottom:1.5rem}
+.crumbs a:hover{color:var(--brand)}
+.ppage__tg{margin-top:1rem}
+.ppage .modal__main{width:100%;border-radius:14px}
+.ppage .thumb{cursor:pointer}

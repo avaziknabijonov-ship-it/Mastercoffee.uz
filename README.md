@@ -1,61 +1,47 @@
 # Master Coffee
 
-Kofe mashinalari, aksessuarlar, don kofe va qadoqlangan kofe sotuvi + kofe mashinalari arendasi va ta'mirlash xizmati uchun sayt. Static sayt (HTML/CSS/JS), hech qanday build kerak emas.
+Kofe mashinalari, bar uskunalari, aksessuarlar, don kofe va qadoqlangan kofe sotuvi + kofe mashinalari arendasi va ta'mirlash xizmati uchun sayt.
+
+Frontend — oddiy HTML/CSS/JS. Server (`app/main.py`, FastAPI) saytni beradi va quyidagilarni qo'shadi:
+
+- `/admin` — parol bilan kiriladigan admin panel: mahsulot qo'shish/tahrirlash/o'chirish, rasm yuklash, tartib, kelgan arizalar ro'yxati.
+- `/api/lead` — arizalarni qabul qiladi va Telegram botga yuboradi (bot tokeni faqat serverda).
+- `/p/<id>` — har bir mahsulot uchun alohida sahifa (uz/ru, Open Graph, `Product` JSON-LD).
+- `/sitemap.xml`, `/robots.txt` — mahsulotlar ro'yxatidan avtomatik.
 
 ## Ishga tushirish
 
 ```bash
-python3 -m http.server 5173
-# http://localhost:5173
+pip install fastapi==0.115.6 uvicorn==0.32.1 python-multipart==0.0.19
+cp .env.example .env   # ADMIN_PASSWORD va Telegram qiymatlarini kiriting
+python3 -m uvicorn app.main:app --port 5173
+# http://localhost:5173  ·  admin: http://localhost:5173/admin
 ```
+
+## Sozlamalar (`.env`)
+
+| O'zgaruvchi | Ma'nosi |
+|---|---|
+| `ADMIN_PASSWORD` | Admin panel paroli |
+| `TELEGRAM_BOT_TOKEN` | @BotFather bergan token |
+| `TELEGRAM_CHAT_ID` | Arizalar tushadigan chat/guruh ID (`https://api.telegram.org/bot<TOKEN>/getUpdates`) |
+| `SITE_URL` | Ixtiyoriy kanonik domen, masalan `https://mastercoffee.uz` |
+| `DATA_DIR` | Ixtiyoriy; standart: `/data` (agar mavjud bo'lsa) yoki `./var` |
+
+Token sozlanmagan bo'lsa ham arizalar `DATA_DIR/leads.jsonl` ga yoziladi va admin paneldagi "Arizalar" bo'limida ko'rinadi.
+
+## Ma'lumotlar
+
+- `data/products.json` — boshlang'ich katalog (Telegram kanal @mastercoffeeprice dan olingan). Server birinchi ishga tushganda uni `DATA_DIR/products.json` ga nusxalaydi; keyingi o'zgarishlar admin panel orqali o'sha faylga yoziladi.
+- Narxlar USD da (`config.js` → `currency`). `price: 0` — "Narxini so'rang".
+- Kategoriyalar: `machines` | `bar` | `beans` | `packed` | `accessories`. `stock`: `in` | `order`.
 
 ## Fayllar
 
 | Fayl | Nima uchun |
 |---|---|
-| `index.html` | Sahifa tuzilishi (barcha matnlar `data-i18n` kalitlari orqali) |
-| `styles.css` | Dizayn |
-| `script.js` | Katalog, filtr/qidiruv/saralash, mahsulot oynasi, savat, forma |
-| `config.js` | Telefon, manzil, Telegram bot, webhook, analitika sozlamalari |
+| `index.html`, `styles.css`, `script.js` | Asosiy sahifa, katalog, savat, forma |
+| `config.js` | Telefon, manzil, ijtimoiy tarmoqlar, valyuta, ariza endpointi, analitika |
 | `i18n.js` | O'zbekcha/ruscha tarjimalar |
-| `data/products.json` | Mahsulotlar ro'yxati |
-| `sitemap.xml`, `robots.txt` | SEO |
-
-## Mahsulot qo'shish
-
-`data/products.json` ichiga yangi obyekt qo'shing:
-
-```json
-{
-  "id": "m7",
-  "cat": "machines",
-  "sku": "MC-XXX-001",
-  "brand": "Brend",
-  "price": 12000000,
-  "old": 0,
-  "badge": { "uz": "Yangi", "ru": "Новинка" },
-  "stock": "in",
-  "name": { "uz": "Nomi", "ru": "Название" },
-  "desc": { "uz": "Tavsif", "ru": "Описание" },
-  "specs": [{ "k": { "uz": "Quvvat", "ru": "Мощность" }, "v": { "uz": "1500 W", "ru": "1500 Вт" } }],
-  "images": ["https://.../rasm.jpg"]
-}
-```
-
-`cat`: `machines` | `beans` | `packed` | `accessories`. `stock`: `in` | `order`.
-
-## Arizalarni Telegramga ulash
-
-1. Telegramda [@BotFather](https://t.me/BotFather) → `/newbot` → token oling.
-2. Botga yozing, so'ng `https://api.telegram.org/bot<TOKEN>/getUpdates` orqali `chat.id` ni oling.
-3. `config.js` da to'ldiring:
-
-```js
-telegram: { enabled: true, botToken: "123:ABC", chatId: "123456789" }
-```
-
-Diqqat: token frontend kodda ochiq bo'ladi. Xavfsiz variant — `webhookUrl` ga serverless funksiya (Netlify/Vercel/Cloudflare Worker) qo'yib, tokenni o'sha yerda saqlash.
-
-## Sozlanadigan qiymatlar (`config.js`)
-
-Telefon, email, manzil, ish vaqti, Telegram/Instagram/Facebook, Google Analytics va Yandex Metrika ID lari, to'lov usullari.
+| `admin.html`, `admin.js` | Admin panel |
+| `app/main.py` | Server (API, mahsulot sahifalari, sitemap) |

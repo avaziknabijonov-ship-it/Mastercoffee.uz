@@ -13,19 +13,12 @@ window.SITE = {
   instagram: "https://www.instagram.com/mastercoffee.uz",
   facebook: "https://facebook.com/",
 
-  /* Buyurtmalarni Telegram botga yuborish.
-     1) @BotFather da bot yarating -> token oling
-     2) Botga yozing, keyin https://api.telegram.org/bot<TOKEN>/getUpdates dan chat_id ni oling
-     3) Quyidagi qiymatlarni to'ldiring.
-     Eslatma: token brauzerda ko'rinadi. Xavfsizroq yo'l — serverless proxy (README ga qarang). */
-  telegram: {
-    enabled: false,
-    botToken: "",
-    chatId: ""
-  },
+  /* Narxlar valyutasi: "USD" ($) yoki "UZS" (so'm). Narx 0 bo'lsa — "Narxini so'rang". */
+  currency: "USD",
 
-  /* Ixtiyoriy: buyurtmani tashqi endpointga yuborish (Google Apps Script, Formspree, o'z backend) */
-  webhookUrl: "",
+  /* Arizalar shu manzilga yuboriladi; server (server/app.py) ularni Telegram botga uzatadi.
+     Bot tokeni faqat serverda saqlanadi, brauzerda ko'rinmaydi. */
+  leadEndpoint: "/api/lead",
 
   analytics: {
     googleId: "",      // masalan: G-XXXXXXXXXX
