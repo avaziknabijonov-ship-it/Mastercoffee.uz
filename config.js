@@ -20,10 +20,5 @@ window.SITE = {
      Bot tokeni faqat serverda saqlanadi, brauzerda ko'rinmaydi. */
   leadEndpoint: "/api/lead",
 
-  analytics: {
-    googleId: "",      // masalan: G-XXXXXXXXXX
-    yandexId: ""       // masalan: 12345678
-  },
-
   payments: ["Payme", "Click", "Uzum Nasiya", "Naqd pul", "Bank o'tkazmasi (shartnoma)"]
 };

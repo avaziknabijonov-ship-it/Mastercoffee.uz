@@ -1,6 +1,7 @@
 import html
 import json
 import os
+import re
 import secrets
 import shutil
 import threading
@@ -58,6 +59,10 @@ ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
 TG_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 TG_CHAT = os.environ.get("TELEGRAM_CHAT_ID", "")
 SITE_URL = os.environ.get("SITE_URL", "").rstrip("/")
+GOOGLE_VERIFY = os.environ.get("GOOGLE_SITE_VERIFICATION", "")
+YANDEX_VERIFY = os.environ.get("YANDEX_VERIFICATION", "")
+GA_ID = os.environ.get("GA_ID", "")
+YM_ID = os.environ.get("YANDEX_METRIKA_ID", "")
 
 PUBLIC_FILES = {"index.html", "styles.css", "script.js", "config.js", "i18n.js", "robots.txt", "admin.html", "admin.js"}
 PUBLIC_DIRS = {"assets"}
@@ -95,6 +100,28 @@ def require_admin(password: str | None) -> None:
         raise HTTPException(503, "ADMIN_PASSWORD is not configured")
     if not password or not secrets.compare_digest(password, ADMIN_PASSWORD):
         raise HTTPException(401, "Wrong password")
+
+
+def head_extras() -> str:
+    out = []
+    if GOOGLE_VERIFY:
+        out.append(f'<meta name="google-site-verification" content="{html.escape(GOOGLE_VERIFY)}">')
+    if YANDEX_VERIFY:
+        out.append(f'<meta name="yandex-verification" content="{html.escape(YANDEX_VERIFY)}">')
+    if re.fullmatch(r"G-[A-Z0-9]+", GA_ID):
+        out.append(
+            f'<script async src="https://www.googletagmanager.com/gtag/js?id={GA_ID}"></script>'
+            "<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}"
+            f'gtag("js",new Date());gtag("config","{GA_ID}");</script>'
+        )
+    if YM_ID.isdigit():
+        out.append(
+            "<script>(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};"
+            "k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})"
+            '(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");'
+            f'ym({YM_ID},"init",{{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true}});</script>'
+        )
+    return "\n".join(out)
 
 
 def base_url(request: Request) -> str:
@@ -179,18 +206,45 @@ class Lead(BaseModel):
     page: str = ""
 
 
-def send_telegram(text: str) -> bool:
-    body = urllib.parse.urlencode({"chat_id": TG_CHAT, "text": text}).encode()
-    req = urllib.request.Request(f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage", data=body)
-    with urllib.request.urlopen(req, timeout=10) as r:
-        return r.status == 200
+def phone_digits(phone: str) -> str:
+    d = re.sub(r"\D", "", phone)
+    if len(d) == 9:
+        d = "998" + d
+    return d if 9 <= len(d) <= 15 else ""
+
+
+def lead_buttons(phone: str, base: str) -> list:
+    d = phone_digits(phone)
+    if not d:
+        return []
+    return [
+        [{"text": "📞 Qo'ng'iroq qilish", "url": f"{base}/call/{d}"}],
+        [{"text": "✈️ Telegram'da yozish", "url": f"https://t.me/+{d}"}, {"text": "💬 WhatsApp", "url": f"https://wa.me/{d}"}],
+    ]
+
+
+def send_telegram(text: str, buttons: list | None = None) -> bool:
+    params = {"chat_id": TG_CHAT, "text": text}
+    if buttons:
+        params["reply_markup"] = json.dumps({"inline_keyboard": buttons})
+    req = urllib.request.Request(
+        f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage", data=urllib.parse.urlencode(params).encode()
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=10) as r:
+            return r.status == 200
+    except OSError:
+        if buttons:
+            return send_telegram(text)
+        raise
 
 
 @app.post("/api/lead")
-def lead(data: Lead):
+def lead(data: Lead, request: Request):
     if not data.name.strip() or not data.phone.strip():
         raise HTTPException(400, "Name and phone are required")
-    lines = [f"🆕 {data.topic or 'Ariza'}", f"👤 {data.name}", f"📞 {data.phone}"]
+    d = phone_digits(data.phone)
+    lines = [f"🆕 {data.topic or 'Ariza'}", f"👤 {data.name}", f"📞 {'+' + d if d else data.phone}"]
     if data.company:
         lines.append(f"🏢 {data.company}")
     if data.note:
@@ -205,7 +259,7 @@ def lead(data: Lead):
     if not (TG_TOKEN and TG_CHAT):
         return {"ok": True, "telegram": False}
     try:
-        delivered = send_telegram(text)
+        delivered = send_telegram(text, lead_buttons(data.phone, base_url(request)))
     except OSError:
         delivered = False
     if not delivered:
@@ -225,7 +279,7 @@ def admin_leads(x_admin_password: str | None = Header(default=None)):
 
 @app.get("/robots.txt")
 def robots(request: Request):
-    return PlainTextResponse(f"User-agent: *\nDisallow: /admin\nDisallow: /api/\nAllow: /\n\nSitemap: {base_url(request)}/sitemap.xml\n")
+    return PlainTextResponse(f"User-agent: *\nDisallow: /admin\nDisallow: /api/\nDisallow: /call/\nAllow: /\n\nSitemap: {base_url(request)}/sitemap.xml\n")
 
 
 @app.get("/sitemap.xml")
@@ -268,6 +322,7 @@ PAGE = """<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css"><link rel="icon" type="image/png" href="/assets/favicon.png">
 <script type="application/ld+json">{ld}</script>
+{extras}
 </head>
 <body class="ppage">
 <div class="topbar"><div class="container topbar__inner">
@@ -345,7 +400,7 @@ def product_page(pid: str, request: Request, lang: str = "uz"):
         stock=("Buyurtma asosida" if lang == "uz" else "Под заказ") if on_order else ("Mavjud" if lang == "uz" else "В наличии"),
         specs="".join(f"<tr><td>{e(k)}</td><td>{e(v)}</td></tr>" for k, v in rows),
         catalog="Katalog" if lang == "uz" else "Каталог", contacts="Aloqa" if lang == "uz" else "Контакты",
-        pid=e(pid), order="Buyurtma berish" if lang == "uz" else "Заказать",
+        extras=head_extras(), pid=e(pid), order="Buyurtma berish" if lang == "uz" else "Заказать",
     )
     return HTMLResponse(page)
 
@@ -365,9 +420,24 @@ def admin_redirect():
     return FileResponse(ROOT / "admin.html")
 
 
-@app.get("/")
-def index():
-    return FileResponse(ROOT / "index.html")
+@app.get("/call/{digits}", response_class=HTMLResponse)
+def call(digits: str):
+    if not re.fullmatch(r"\d{9,15}", digits):
+        raise HTTPException(404)
+    tel = f"tel:+{digits}"
+    return HTMLResponse(
+        f'<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="robots" content="noindex">'
+        f'<meta name="viewport" content="width=device-width, initial-scale=1">'
+        f'<meta http-equiv="refresh" content="0;url={tel}"><title>+{digits}</title></head>'
+        f'<body style="font-family:sans-serif;text-align:center;padding:3rem">'
+        f'<a href="{tel}" style="font-size:1.6rem">📞 +{digits}</a></body></html>'
+    )
+
+
+@app.get("/", response_class=HTMLResponse)
+def index(request: Request):
+    page = (ROOT / "index.html").read_text().replace("https://mastercoffee.uz", base_url(request))
+    return HTMLResponse(page.replace("</head>", head_extras() + "\n</head>", 1))
 
 
 @app.get("/{path:path}")

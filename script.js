@@ -341,25 +341,6 @@ document.querySelectorAll("[data-count]").forEach(c => cio.observe(c));
 
 document.getElementById("year").textContent = new Date().getFullYear();
 
-/* ---------- analytics ---------- */
-(function analytics(){
-  const { googleId, yandexId } = CFG.analytics || {};
-  if(googleId){
-    const s = document.createElement("script");
-    s.async = true; s.src = `https://www.googletagmanager.com/gtag/js?id=${googleId}`;
-    document.head.appendChild(s);
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = function(){ window.dataLayer.push(arguments); };
-    gtag("js", new Date()); gtag("config", googleId);
-  }
-  if(yandexId){
-    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-      k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-    })(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");
-    window.ym(yandexId, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true });
-  }
-})();
-
 /* ---------- boot ---------- */
 fetch("data/products.json")
   .then(r => r.json())

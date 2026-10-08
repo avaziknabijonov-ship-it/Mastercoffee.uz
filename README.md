@@ -26,7 +26,11 @@ python3 -m uvicorn app.main:app --port 5173
 | `TELEGRAM_BOT_TOKEN` | @BotFather bergan token |
 | `TELEGRAM_CHAT_ID` | Arizalar tushadigan chat/guruh ID (`https://api.telegram.org/bot<TOKEN>/getUpdates`) |
 | `SITE_URL` | Ixtiyoriy kanonik domen, masalan `https://mastercoffee.uz` |
+| `GOOGLE_SITE_VERIFICATION` / `YANDEX_VERIFICATION` | Ixtiyoriy; Search Console / Yandex Webmaster meta-teg kodi |
+| `GA_ID` / `YANDEX_METRIKA_ID` | Ixtiyoriy; Google Analytics (`G-...`) va Yandex Metrika (raqam) |
 | `DATA_DIR` | Ixtiyoriy; standart: `/data` (agar mavjud bo'lsa) yoki `./var` |
+
+Telegram xabarida mijozga qo'ng'iroq (`/call/<raqam>`), Telegram va WhatsApp tugmalari bo'ladi.
 
 Token sozlanmagan bo'lsa ham arizalar `DATA_DIR/leads.jsonl` ga yoziladi va admin paneldagi "Arizalar" bo'limida ko'rinadi.
 
