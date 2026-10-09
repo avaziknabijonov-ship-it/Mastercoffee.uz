@@ -347,7 +347,6 @@ const cio = new IntersectionObserver(es => es.forEach(en => {
 document.querySelectorAll("[data-since]").forEach(el => { el.dataset.count = new Date().getFullYear() - +el.dataset.since; });
 document.querySelectorAll("[data-count]").forEach(c => cio.observe(c));
 
-document.getElementById("year").textContent = new Date().getFullYear();
 
 /* ---------- site sections (admin-editable) ---------- */
 function renderSite(){
