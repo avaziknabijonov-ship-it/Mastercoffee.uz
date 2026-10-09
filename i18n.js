@@ -115,7 +115,7 @@ window.I18N = {
 
     "about.eyebrow": "Biz haqimizda",
     "about.title": "Kofe biznesining<br>barcha bosqichida yoningizdamiz",
-    "about.p": "Master Coffee — kofe mashinalari va kofe mahsulotlari bo'yicha to'liq xizmat ko'rsatuvchi kompaniya. Biz uskunani tanlashda maslahat beramiz, o'rnatamiz, xodimlaringizni o'qitamiz va keyinchalik texnik xizmat ko'rsatamiz.",
+    "about.p": "Master Coffee — 2019-yildan beri kofe mashinalari va kofe mahsulotlari bo'yicha to'liq xizmat ko'rsatuvchi kompaniya. Biz uskunani tanlashda maslahat beramiz, o'rnatamiz, xodimlaringizni o'qitamiz va keyinchalik texnik xizmat ko'rsatamiz.",
     "about.l1": "Ofis, kafe, restoran va do'konlar uchun yechimlar",
     "about.l2": "Har hafta qovuriladigan yangi don kofe",
     "about.l3": "Ulgurji mijozlarga alohida narxlar",
@@ -291,7 +291,7 @@ window.I18N = {
 
     "about.eyebrow": "О нас",
     "about.title": "Рядом с вами на каждом<br>этапе кофейного бизнеса",
-    "about.p": "Master Coffee — компания полного цикла по кофемашинам и кофейной продукции. Мы помогаем выбрать оборудование, устанавливаем его, обучаем персонал и обслуживаем технику в дальнейшем.",
+    "about.p": "Master Coffee — с 2019 года компания полного цикла по кофемашинам и кофейной продукции. Мы помогаем выбрать оборудование, устанавливаем его, обучаем персонал и обслуживаем технику в дальнейшем.",
     "about.l1": "Решения для офисов, кафе, ресторанов и магазинов",
     "about.l2": "Свежая обжарка зерна каждую неделю",
     "about.l3": "Специальные цены для оптовых клиентов",
