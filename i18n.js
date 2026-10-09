@@ -30,8 +30,8 @@ window.I18N = {
     "hero.catalogBtn": "Katalogni ko'rish",
     "hero.rentBtn": "Mashina arendasi",
     "hero.stat1": "yillik tajriba",
-    "hero.stat2": "o'rnatilgan mashina",
-    "hero.stat3": "soatda servis",
+    "hero.stat2": "kun haftada ishlaymiz",
+    "hero.stat3": "ish vaqti (Du–Sha)",
 
     "usp1.t": "Rasmiy kafolat", "usp1.d": "Barcha texnikaga 12–24 oy kafolat",
     "usp2.t": "Tez yetkazib berish", "usp2.d": "Toshkent bo'ylab 1 kunda, viloyatlarga 2–4 kun",
@@ -115,13 +115,13 @@ window.I18N = {
 
     "about.eyebrow": "Biz haqimizda",
     "about.title": "Kofe biznesining<br>barcha bosqichida yoningizdamiz",
-    "about.p": "Master Coffee — kofe mashinalari va kofe mahsulotlari bo'yicha to'liq xizmat ko'rsatuvchi kompaniya. Biz uskunani tanlashda maslahat beramiz, o'rnatamiz, xodimlaringizni o'qitamiz va keyinchalik texnik xizmat ko'rsatamiz.",
+    "about.p": "Master Coffee — 2019-yildan beri kofe mashinalari va kofe mahsulotlari bo'yicha to'liq xizmat ko'rsatuvchi kompaniya. Biz uskunani tanlashda maslahat beramiz, o'rnatamiz, xodimlaringizni o'qitamiz va keyinchalik texnik xizmat ko'rsatamiz.",
     "about.l1": "Ofis, kafe, restoran va do'konlar uchun yechimlar",
     "about.l2": "Har hafta qovuriladigan yangi don kofe",
     "about.l3": "Ulgurji mijozlarga alohida narxlar",
     "about.l4": "Shartnoma asosida oylik texnik xizmat",
     "about.link": "Hamkorlik uchun bog'laning →",
-    "about.badge": "o'rnatilgan<br>kofe mashinasi",
+    "about.badge": "yildan beri<br>bozorda",
 
     "rev.eyebrow": "Mijozlar fikri",
     "rev.title": "Bizga ishonishadi",
@@ -206,8 +206,8 @@ window.I18N = {
     "hero.catalogBtn": "Смотреть каталог",
     "hero.rentBtn": "Аренда кофемашины",
     "hero.stat1": "лет на рынке",
-    "hero.stat2": "установленных машин",
-    "hero.stat3": "часа на выезд сервиса",
+    "hero.stat2": "дней в неделю",
+    "hero.stat3": "часы работы (Пн–Сб)",
 
     "usp1.t": "Официальная гарантия", "usp1.d": "12–24 месяца на всю технику",
     "usp2.t": "Быстрая доставка", "usp2.d": "По Ташкенту за 1 день, в регионы 2–4 дня",
@@ -291,13 +291,13 @@ window.I18N = {
 
     "about.eyebrow": "О нас",
     "about.title": "Рядом с вами на каждом<br>этапе кофейного бизнеса",
-    "about.p": "Master Coffee — компания полного цикла по кофемашинам и кофейной продукции. Мы помогаем выбрать оборудование, устанавливаем его, обучаем персонал и обслуживаем технику в дальнейшем.",
+    "about.p": "Master Coffee — с 2019 года компания полного цикла по кофемашинам и кофейной продукции. Мы помогаем выбрать оборудование, устанавливаем его, обучаем персонал и обслуживаем технику в дальнейшем.",
     "about.l1": "Решения для офисов, кафе, ресторанов и магазинов",
     "about.l2": "Свежая обжарка зерна каждую неделю",
     "about.l3": "Специальные цены для оптовых клиентов",
     "about.l4": "Ежемесячное обслуживание по договору",
     "about.link": "Связаться по сотрудничеству →",
-    "about.badge": "установленных<br>кофемашин",
+    "about.badge": "года<br>на рынке",
 
     "rev.eyebrow": "Отзывы",
     "rev.title": "Нам доверяют",

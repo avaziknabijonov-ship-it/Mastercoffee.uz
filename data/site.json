@@ -1,0 +1,244 @@
+{
+ "categories": [
+  {
+   "id": "machines",
+   "name": {
+    "uz": "Kofe mashinalari",
+    "ru": "Кофемашины"
+   },
+   "desc": {
+    "uz": "Avtomat, rojkovıy va kapsulali",
+    "ru": "Автоматические, рожковые и капсульные"
+   },
+   "image": "assets/products/ks535-1.jpg"
+  },
+  {
+   "id": "bar",
+   "name": {
+    "uz": "Bar uskunalari",
+    "ru": "Барное оборудование"
+   },
+   "desc": {
+    "uz": "Muz generatori, blender, sharbat siqgich",
+    "ru": "Льдогенераторы, блендеры, соковыжималки"
+   },
+   "image": "assets/products/ice-machine-1.jpg"
+  },
+  {
+   "id": "beans",
+   "name": {
+    "uz": "Kofe donlari",
+    "ru": "Кофе в зёрнах"
+   },
+   "desc": {
+    "uz": "Arabica, blend, single origin",
+    "ru": "Арабика, бленды, single origin"
+   },
+   "image": "https://images.unsplash.com/photo-1442550528053-c431ecb55509?auto=format&fit=crop&w=700&q=80"
+  },
+  {
+   "id": "packed",
+   "name": {
+    "uz": "Qadoqlangan kofe",
+    "ru": "Фасованный кофе"
+   },
+   "desc": {
+    "uz": "Chakana va ulgurji qadoqlar",
+    "ru": "Розничные и оптовые упаковки"
+   },
+   "image": "https://images.unsplash.com/photo-1559525839-b184a4d698c7?auto=format&fit=crop&w=700&q=80"
+  },
+  {
+   "id": "accessories",
+   "name": {
+    "uz": "Aksessuarlar",
+    "ru": "Аксессуары"
+   },
+   "desc": {
+    "uz": "Tamper, pitcher, gyeyzer, filtr",
+    "ru": "Темпер, питчер, гейзер, фильтры"
+   },
+   "image": "https://images.unsplash.com/photo-1587734195503-904fca47e0e9?auto=format&fit=crop&w=700&q=80"
+  }
+ ],
+ "rent": {
+  "image": "https://images.unsplash.com/photo-1521302080334-4bebac2763a6?auto=format&fit=crop&w=700&q=80",
+  "title": {
+   "uz": "Arenda",
+   "ru": "Аренда"
+  },
+  "desc": {
+   "uz": "Oylik to'lov bilan mashina",
+   "ru": "Кофемашина с ежемесячной оплатой"
+  },
+  "plans": [
+   {
+    "name": {
+     "uz": "Ofis",
+     "ru": "Офис"
+    },
+    "price": "1 200 000",
+    "period": {
+     "uz": "so'm/oy",
+     "ru": "сум/мес"
+    },
+    "featured": false,
+    "features": [
+     {
+      "uz": "Avtomat kofe mashinasi (50 chashka/kun)",
+      "ru": "Автоматическая кофемашина (50 чашек/день)"
+     },
+     {
+      "uz": "Bepul o'rnatish va sozlash",
+      "ru": "Бесплатная установка и настройка"
+     },
+     {
+      "uz": "Har oy profilaktika",
+      "ru": "Ежемесячная профилактика"
+     },
+     {
+      "uz": "Oyiga 4 kg don kofe sovg'a",
+      "ru": "4 кг кофе в зёрнах в подарок каждый месяц"
+     }
+    ]
+   },
+   {
+    "name": {
+     "uz": "Kafe / Restoran",
+     "ru": "Кафе / Ресторан"
+    },
+    "price": "2 900 000",
+    "period": {
+     "uz": "so'm/oy",
+     "ru": "сум/мес"
+    },
+    "featured": true,
+    "features": [
+     {
+      "uz": "Professional rojkovıy mashina + grinder",
+      "ru": "Профессиональная рожковая машина + кофемолка"
+     },
+     {
+      "uz": "Barista treningi (2 kun)",
+      "ru": "Обучение бариста (2 дня)"
+     },
+     {
+      "uz": "24 soatda usta chiqishi",
+      "ru": "Выезд мастера за 24 часа"
+     },
+     {
+      "uz": "Ehtiyot qismlar kafolat ichida",
+      "ru": "Запчасти в рамках гарантии"
+     }
+    ]
+   },
+   {
+    "name": {
+     "uz": "Tadbir (kunlik)",
+     "ru": "Мероприятие (посуточно)"
+    },
+    "price": "750 000",
+    "period": {
+     "uz": "so'm/kun",
+     "ru": "сум/день"
+    },
+    "featured": false,
+    "features": [
+     {
+      "uz": "Mashina + barista xizmati",
+      "ru": "Машина + услуги бариста"
+     },
+     {
+      "uz": "Yetkazib berish va yig'ish",
+      "ru": "Доставка и монтаж"
+     },
+     {
+      "uz": "Kofe, sut va stakanlar",
+      "ru": "Кофе, молоко и стаканы"
+     },
+     {
+      "uz": "Konferensiya, to'y, ko'rgazma uchun",
+      "ru": "Для конференций, свадеб, выставок"
+     }
+    ]
+   }
+  ]
+ },
+ "service": {
+  "image": "https://images.unsplash.com/photo-1610889556528-9a770e32642f?auto=format&fit=crop&w=700&q=80",
+  "title": {
+   "uz": "Ta'mirlash",
+   "ru": "Ремонт"
+  },
+  "desc": {
+   "uz": "Diagnostika, profilaktika, ehtiyot qism",
+   "ru": "Диагностика, профилактика, запчасти"
+  },
+  "items": [
+   {
+    "name": {
+     "uz": "Diagnostika",
+     "ru": "Диагностика"
+    },
+    "price": {
+     "uz": "Bepul",
+     "ru": "Бесплатно"
+    }
+   },
+   {
+    "name": {
+     "uz": "Qav (nakip) dan tozalash",
+     "ru": "Очистка от накипи"
+    },
+    "price": {
+     "uz": "450 000 so'm",
+     "ru": "450 000 сум"
+    }
+   },
+   {
+    "name": {
+     "uz": "Zavarnoy blok profilaktikasi",
+     "ru": "Профилактика заварочного блока"
+    },
+    "price": {
+     "uz": "600 000 so'm",
+     "ru": "600 000 сум"
+    }
+   },
+   {
+    "name": {
+     "uz": "Nasos (pompa) almashtirish",
+     "ru": "Замена помпы"
+    },
+    "price": {
+     "uz": "900 000 so'mdan",
+     "ru": "от 900 000 сум"
+    }
+   },
+   {
+    "name": {
+     "uz": "Boyler ta'mirlash",
+     "ru": "Ремонт бойлера"
+    },
+    "price": {
+     "uz": "1 200 000 so'mdan",
+     "ru": "от 1 200 000 сум"
+    }
+   },
+   {
+    "name": {
+     "uz": "Oylik texnik xizmat (shartnoma)",
+     "ru": "Ежемесячное обслуживание (договор)"
+    },
+    "price": {
+     "uz": "500 000 so'm/oy",
+     "ru": "500 000 сум/мес"
+    }
+   }
+  ],
+  "note": {
+   "uz": "Yakuniy narx diagnostikadan so'ng belgilanadi.",
+   "ru": "Окончательная цена определяется после диагностики."
+  }
+ }
+}

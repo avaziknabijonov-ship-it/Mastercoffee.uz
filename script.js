@@ -1,14 +1,15 @@
 const CFG = window.SITE;
-const CATS = ["machines","bar","beans","packed","accessories"];
 
 let lang = localStorage.getItem("mc_lang") || "uz";
 let PRODUCTS = [];
+let SITE = { categories:[], rent:{ plans:[] }, service:{ items:[] } };
 let state = { cat:"all", q:"", sort:"popular" };
 
 const t = key => (window.I18N[lang] && window.I18N[lang][key]) || key;
 const tr = obj => !obj ? "" : (obj[lang] || obj.uz || "");
 const num = n => n.toLocaleString("ru-RU").replace(/\u00a0/g," ");
 const fmt = n => !n ? t("price.ask") : CFG.currency === "USD" ? "$" + num(n) : num(n) + (lang === "uz" ? " so'm" : " сум");
+const catName = id => tr((SITE.categories.find(c => c.id === id) || {}).name) || id;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
 
 /* ---------- i18n ---------- */
@@ -23,6 +24,7 @@ function applyLang(){
   document.getElementById("ogDesc").content = t("meta.desc");
   document.querySelectorAll(".lang__btn").forEach(b => b.classList.toggle("is-active", b.dataset.lang === lang));
   applySiteData();
+  renderSite();
   render();
   renderCart();
 }
@@ -65,7 +67,7 @@ function visible(){
   let items = PRODUCTS.filter(p => state.cat === "all" || p.cat === state.cat);
   const q = state.q.trim().toLowerCase();
   if(q) items = items.filter(p =>
-    (tr(p.name) + " " + tr(p.desc) + " " + (p.brand||"") + " " + (p.sku||"") + " " + t("cat." + p.cat)).toLowerCase().includes(q));
+    (tr(p.name) + " " + tr(p.desc) + " " + (p.brand||"") + " " + (p.sku||"") + " " + catName(p.cat)).toLowerCase().includes(q));
   if(state.sort === "asc") items = [...items].sort((a,b) => (a.price || Infinity) - (b.price || Infinity));
   if(state.sort === "desc") items = [...items].sort((a,b) => b.price - a.price);
   if(state.sort === "name") items = [...items].sort((a,b) => tr(a.name).localeCompare(tr(b.name)));
@@ -82,7 +84,7 @@ function cardHtml(p){
         ${badge ? `<span class="badge${sale ? " badge--sale" : ""}">${esc(badge)}</span>` : ""}
       </div>
       <div class="card__body">
-        <span class="card__cat">${t("cat." + p.cat)}</span>
+        <span class="card__cat">${catName(p.cat)}</span>
         <h3 data-open="${p.id}">${esc(tr(p.name))}</h3>
         <p>${esc(tr(p.desc))}</p>
         <span class="stock ${p.stock === "order" ? "stock--order" : ""}">${p.stock === "order" ? t("product.onOrder") : t("product.inStock")}</span>
@@ -122,11 +124,13 @@ document.getElementById("searchForm").addEventListener("submit", e => {
 });
 searchInput.addEventListener("input", () => { if(!searchInput.value){ state.q = ""; render(); } });
 
-document.querySelectorAll("[data-jump]").forEach(el => el.addEventListener("click", () => {
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-jump]");
+  if(!el) return;
   state.cat = el.dataset.jump; state.q = ""; searchInput.value = "";
   setActiveTab(state.cat); render();
   document.getElementById("catnav").classList.remove("is-open");
-}));
+});
 
 /* ---------- product modal ---------- */
 const modal = document.getElementById("productModal");
@@ -146,7 +150,7 @@ function openProduct(id){
           `<img class="thumb${i===0?" is-active":""}" data-src="${s}" src="${s}" alt="">`).join("")}</div>` : ""}
       </div>
       <div class="modal__info">
-        <span class="card__cat">${t("cat." + p.cat)}</span>
+        <span class="card__cat">${catName(p.cat)}</span>
         <h3>${esc(tr(p.name))}</h3>
         <p class="muted">${esc(tr(p.desc))}</p>
         <p class="modal__price">${fmt(p.price)} ${sale ? `<s>${fmt(p.old)}</s>` : ""}</p>
@@ -299,12 +303,14 @@ form.addEventListener("submit", async e => {
   }
 });
 
-document.querySelectorAll("[data-rent]").forEach(btn => btn.addEventListener("click", () => {
+document.getElementById("plans").addEventListener("click", e => {
+  const btn = e.target.closest("[data-rent]");
+  if(!btn) return;
   document.getElementById("topicSelect").value = "rent";
   document.querySelector('#leadForm [name="note"]').value = `${t("rent.title")}: ${btn.dataset.rent}`;
   document.getElementById("formTitle").textContent = t("form.rentTitle");
   document.getElementById("contact").scrollIntoView({ behavior:"smooth" });
-}));
+});
 
 document.getElementById("serviceCta").addEventListener("click", () => {
   document.getElementById("topicSelect").value = "service";
@@ -335,18 +341,50 @@ const cio = new IntersectionObserver(es => es.forEach(en => {
   if(!en.isIntersecting) return;
   const el = en.target, target = +el.dataset.count;
   let n = 0;
-  const step = () => { n += Math.max(1, Math.ceil(target/30)); el.textContent = n >= target ? target + "+" : n; if(n < target) requestAnimationFrame(step); };
+  const step = () => { n += Math.max(1, Math.ceil(target/30)); el.textContent = n >= target ? target + ("exact" in el.dataset ? "" : "+") : n; if(n < target) requestAnimationFrame(step); };
   step(); cio.unobserve(el);
 }), { threshold:.6 });
+document.querySelectorAll("[data-since]").forEach(el => { el.dataset.count = new Date().getFullYear() - +el.dataset.since; });
 document.querySelectorAll("[data-count]").forEach(c => cio.observe(c));
 
 document.getElementById("year").textContent = new Date().getFullYear();
 
+/* ---------- site sections (admin-editable) ---------- */
+function renderSite(){
+  const cats = SITE.categories;
+  const tile = (href, jump, img, name, desc) => `<a class="cat" href="${href}"${jump ? ` data-jump="${esc(jump)}"` : ""}>
+      <img src="${esc(img || "")}" alt="" loading="lazy"><div><h3>${esc(tr(name))}</h3><span>${esc(tr(desc))}</span></div></a>`;
+  document.getElementById("catsGrid").innerHTML =
+    cats.map(c => tile("#catalog", c.id, c.image, c.name, c.desc)).join("") +
+    tile("#rent", "", SITE.rent.image, SITE.rent.title, SITE.rent.desc) +
+    tile("#service", "", SITE.service.image, SITE.service.title, SITE.service.desc);
+  const links = cats.map(c => `<a href="#catalog" data-jump="${esc(c.id)}">${esc(tr(c.name))}</a>`).join("");
+  const nav = document.getElementById("catnav");
+  nav.querySelectorAll("[data-jump]").forEach(x => x.remove());
+  nav.insertAdjacentHTML("afterbegin", links);
+  document.getElementById("footCats").innerHTML = links;
+  document.querySelectorAll("#tabs .tab:not([data-cat=all])").forEach(x => x.remove());
+  document.getElementById("tabs").insertAdjacentHTML("beforeend",
+    cats.map(c => `<button class="tab" data-cat="${esc(c.id)}">${esc(tr(c.name))}</button>`).join(""));
+  setActiveTab(state.cat);
+  document.getElementById("plans").innerHTML = SITE.rent.plans.map(p => `
+    <div class="plan${p.featured ? " plan--featured" : ""}">
+      ${p.featured ? `<span class="plan__badge">${t("rent.popular")}</span>` : ""}
+      <h3>${esc(tr(p.name))}</h3>
+      <p class="plan__price"><span>${esc(p.price || "")}</span> <span>${esc(tr(p.period))}</span></p>
+      <ul class="ticks">${(p.features || []).map(f => `<li>${esc(tr(f))}</li>`).join("")}</ul>
+      <button class="btn${p.featured ? "" : " btn--ghost-dark"}" data-rent="${esc(tr(p.name))}">${t("rent.cta")}</button>
+    </div>`).join("");
+  document.getElementById("priceList").innerHTML = SITE.service.items
+    .map(it => `<li><span>${esc(tr(it.name))}</span><b>${esc(tr(it.price))}</b></li>`).join("");
+  document.getElementById("srvNote").textContent = tr(SITE.service.note);
+}
+
 /* ---------- boot ---------- */
-fetch("data/products.json")
-  .then(r => r.json())
-  .then(data => {
+Promise.all([fetch("data/products.json").then(r => r.json()), fetch("/api/site").then(r => r.json())])
+  .then(([data, site]) => {
     PRODUCTS = data;
+    SITE = site;
     applyLang();
     const m = location.hash.match(/^#product-(.+)$/);
     if(m) openProduct(m[1]);
