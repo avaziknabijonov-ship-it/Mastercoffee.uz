@@ -27,8 +27,10 @@ document.querySelectorAll("[data-tab]").forEach(b => b.onclick = async () => {
   document.querySelectorAll("[data-tab]").forEach(x => x.classList.toggle("on", x === b));
   $("productsTab").hidden = b.dataset.tab !== "products";
   $("leadsTab").hidden = b.dataset.tab !== "leads";
-  $("siteTab").hidden = b.dataset.tab !== "site";
-  if(b.dataset.tab === "site") renderSite();
+  const sec = ["cats", "rent", "srv"].includes(b.dataset.tab) ? b.dataset.tab : "";
+  $("siteTab").hidden = !sec;
+  document.querySelectorAll("[data-sec]").forEach(p => { p.hidden = p.dataset.sec !== sec; });
+  if(sec) renderSite();
   if(b.dataset.tab === "leads") loadLeads();
 });
 

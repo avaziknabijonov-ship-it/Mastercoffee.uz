@@ -16,6 +16,7 @@ input,select,textarea{font:inherit;width:100%;padding:.45rem .6rem;border:1px so
 textarea{min-height:70px;resize:vertical}
 label{display:block;font-size:.78rem;font-weight:600;color:#6b5546;margin:.55rem 0 .2rem}
 .login{max-width:340px;margin:12vh auto;background:#fff;padding:1.6rem;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+[hidden]{display:none!important}
 .wrap{display:grid;grid-template-columns:320px 1fr;gap:1rem;padding:1rem;max-width:1300px;margin:auto}
 .panel{background:#fff;border-radius:12px;padding:1rem;box-shadow:0 4px 16px rgba(40,24,14,.06)}
 .list{max-height:calc(100vh - 210px);overflow:auto;margin-top:.6rem}
@@ -49,7 +50,7 @@ table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid #eee;pad
 <div id="appView" hidden>
   <header>
     <img src="/assets/logo.png" alt="Master Coffee">
-    <nav class="tabs"><button data-tab="products" class="on">Mahsulotlar</button><button data-tab="site">Yo'nalishlar / Arenda / Ta'mirlash</button><button data-tab="leads">Arizalar</button></nav>
+    <nav class="tabs"><button data-tab="products" class="on">Mahsulotlar</button><button data-tab="cats">Yo'nalishlar</button><button data-tab="rent">Arenda</button><button data-tab="srv">Ta'mirlash</button><button data-tab="leads">Arizalar</button></nav>
     <span class="sp"></span>
     <a href="/" target="_blank" style="color:#e8b98a">Saytni ochish ↗</a>
     <button class="ghost" id="logout">Chiqish</button>
@@ -66,18 +67,18 @@ table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid #eee;pad
   </div>
 
   <div id="siteTab" class="wrap" hidden style="grid-template-columns:1fr">
-    <div class="panel">
+    <div class="panel" data-sec="cats">
       <h3>Katalog yo'nalishlari</h3>
       <p class="hint">Bosh sahifadagi "Yo'nalishlar" kartalari, katalog tablari va menyu. ID — lotin harf/raqam (mahsulotda kategoriya sifatida ishlatiladi).</p>
       <div id="catsEd"></div>
       <div class="bar"><button class="ghost" id="addCat">+ Yo'nalish qo'shish</button></div>
     </div>
-    <div class="panel">
+    <div class="panel" data-sec="rent">
       <h3>Kofe mashinalari arendasi</h3>
       <div id="rentEd"></div>
       <div class="bar"><button class="ghost" id="addPlan">+ Tarif qo'shish</button></div>
     </div>
-    <div class="panel">
+    <div class="panel" data-sec="srv">
       <h3>Ta'mirlash narxlari</h3>
       <div id="srvEd"></div>
     </div>
