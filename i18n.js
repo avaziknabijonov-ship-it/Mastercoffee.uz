@@ -30,8 +30,8 @@ window.I18N = {
     "hero.catalogBtn": "Katalogni ko'rish",
     "hero.rentBtn": "Mashina arendasi",
     "hero.stat1": "yillik tajriba",
-    "hero.stat2": "o'rnatilgan mashina",
-    "hero.stat3": "soatda servis",
+    "hero.stat2": "kun haftada ishlaymiz",
+    "hero.stat3": "ish vaqti (Du–Sha)",
 
     "usp1.t": "Rasmiy kafolat", "usp1.d": "Barcha texnikaga 12–24 oy kafolat",
     "usp2.t": "Tez yetkazib berish", "usp2.d": "Toshkent bo'ylab 1 kunda, viloyatlarga 2–4 kun",
@@ -121,7 +121,7 @@ window.I18N = {
     "about.l3": "Ulgurji mijozlarga alohida narxlar",
     "about.l4": "Shartnoma asosida oylik texnik xizmat",
     "about.link": "Hamkorlik uchun bog'laning →",
-    "about.badge": "o'rnatilgan<br>kofe mashinasi",
+    "about.badge": "yildan beri<br>bozorda",
 
     "rev.eyebrow": "Mijozlar fikri",
     "rev.title": "Bizga ishonishadi",
@@ -206,8 +206,8 @@ window.I18N = {
     "hero.catalogBtn": "Смотреть каталог",
     "hero.rentBtn": "Аренда кофемашины",
     "hero.stat1": "лет на рынке",
-    "hero.stat2": "установленных машин",
-    "hero.stat3": "часа на выезд сервиса",
+    "hero.stat2": "дней в неделю",
+    "hero.stat3": "часы работы (Пн–Сб)",
 
     "usp1.t": "Официальная гарантия", "usp1.d": "12–24 месяца на всю технику",
     "usp2.t": "Быстрая доставка", "usp2.d": "По Ташкенту за 1 день, в регионы 2–4 дня",
@@ -297,7 +297,7 @@ window.I18N = {
     "about.l3": "Специальные цены для оптовых клиентов",
     "about.l4": "Ежемесячное обслуживание по договору",
     "about.link": "Связаться по сотрудничеству →",
-    "about.badge": "установленных<br>кофемашин",
+    "about.badge": "года<br>на рынке",
 
     "rev.eyebrow": "Отзывы",
     "rev.title": "Нам доверяют",

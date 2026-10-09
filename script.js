@@ -341,7 +341,7 @@ const cio = new IntersectionObserver(es => es.forEach(en => {
   if(!en.isIntersecting) return;
   const el = en.target, target = +el.dataset.count;
   let n = 0;
-  const step = () => { n += Math.max(1, Math.ceil(target/30)); el.textContent = n >= target ? target + "+" : n; if(n < target) requestAnimationFrame(step); };
+  const step = () => { n += Math.max(1, Math.ceil(target/30)); el.textContent = n >= target ? target + ("exact" in el.dataset ? "" : "+") : n; if(n < target) requestAnimationFrame(step); };
   step(); cio.unobserve(el);
 }), { threshold:.6 });
 document.querySelectorAll("[data-since]").forEach(el => { el.dataset.count = new Date().getFullYear() - +el.dataset.since; });
