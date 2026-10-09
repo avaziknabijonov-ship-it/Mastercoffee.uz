@@ -1,6 +1,7 @@
 import html
 import json
 import os
+import re
 import secrets
 import shutil
 import threading
@@ -51,31 +52,42 @@ UPLOAD_DIR = DATA_DIR / "uploads"
 PRODUCTS_FILE = DATA_DIR / "products.json"
 SEED_FILE = ROOT / "data" / "products.json"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+SITE_FILE = DATA_DIR / "site.json"
+SITE_SEED = ROOT / "data" / "site.json"
 if not PRODUCTS_FILE.exists():
     shutil.copy(SEED_FILE, PRODUCTS_FILE)
+if not SITE_FILE.exists():
+    shutil.copy(SITE_SEED, SITE_FILE)
 
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
 TG_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 TG_CHAT = os.environ.get("TELEGRAM_CHAT_ID", "")
 SITE_URL = os.environ.get("SITE_URL", "").rstrip("/")
+GOOGLE_VERIFY = os.environ.get("GOOGLE_SITE_VERIFICATION", "")
+YANDEX_VERIFY = os.environ.get("YANDEX_VERIFICATION", "")
+GA_ID = os.environ.get("GA_ID", "")
+YM_ID = os.environ.get("YANDEX_METRIKA_ID", "")
 
-PUBLIC_FILES = {"index.html", "styles.css", "script.js", "config.js", "i18n.js", "robots.txt", "admin.html", "admin.js"}
-PUBLIC_DIRS = {"assets"}
-CATS = {"machines", "bar", "beans", "packed", "accessories"}
-CAT_NAMES = {
-    "machines": {"uz": "Kofe mashinalari", "ru": "Кофемашины"},
-    "bar": {"uz": "Bar uskunalari", "ru": "Барное оборудование"},
-    "beans": {"uz": "Kofe donlari", "ru": "Кофе в зёрнах"},
-    "packed": {"uz": "Qadoqlangan kofe", "ru": "Фасованный кофе"},
-    "accessories": {"uz": "Aksessuarlar", "ru": "Аксессуары"},
+PUBLIC_FILES = {
+    "index.html",
+    "styles.css",
+    "script.js",
+    "config.js",
+    "i18n.js",
+    "robots.txt",
+    "admin.html",
+    "admin.js",
 }
+PUBLIC_DIRS = {"assets"}
 ALLOWED_IMG = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 MAX_UPLOAD = 8 * 1024 * 1024
 _lock = threading.Lock()
 
 app = FastAPI()
 DOC_PATHS = {"/docs", "/docs/oauth2-redirect", "/redoc", "/openapi.json"}
-app.router.routes = [r for r in app.router.routes if not (isinstance(r, Route) and r.path in DOC_PATHS)]
+app.router.routes = [
+    r for r in app.router.routes if not (isinstance(r, Route) and r.path in DOC_PATHS)
+]
 
 
 def read_products() -> list:
@@ -90,11 +102,106 @@ def write_products(items: list) -> None:
         tmp.replace(PRODUCTS_FILE)
 
 
+def read_site() -> dict:
+    with _lock:
+        return json.loads(SITE_FILE.read_text())
+
+
+def write_site(site: dict) -> None:
+    with _lock:
+        tmp = SITE_FILE.with_suffix(".tmp")
+        tmp.write_text(json.dumps(site, ensure_ascii=False, indent=1))
+        tmp.replace(SITE_FILE)
+
+
+def cat_ids() -> set:
+    return {c["id"] for c in read_site()["categories"]}
+
+
+def cat_name(cid: str, lang: str) -> str:
+    c = next((c for c in read_site()["categories"] if c["id"] == cid), None)
+    return tr(c["name"], lang) if c else cid
+
+
+def is_bilingual(v) -> bool:
+    return (
+        isinstance(v, dict)
+        and isinstance(v.get("uz", ""), str)
+        and isinstance(v.get("ru", ""), str)
+    )
+
+
+def validate_site(site: dict) -> dict:
+    if not isinstance(site, dict):
+        raise HTTPException(400, "Expected an object")
+    cats, rent, service = site.get("categories"), site.get("rent"), site.get("service")
+    if not isinstance(cats, list) or not cats:
+        raise HTTPException(400, "At least one category is required")
+    seen = set()
+    for c in cats:
+        cid = str(c.get("id", "")).strip() if isinstance(c, dict) else ""
+        if not cid or cid in seen or not all(ch.isalnum() or ch in "-_" for ch in cid):
+            raise HTTPException(400, f"Invalid or duplicate category id: {cid!r}")
+        if not is_bilingual(c.get("name")) or not c["name"].get("uz"):
+            raise HTTPException(400, f"Missing name.uz for category {cid}")
+        seen.add(cid)
+    used = {p.get("cat") for p in read_products()} - seen
+    if used:
+        raise HTTPException(
+            400, f"Category in use by products: {', '.join(sorted(used))}"
+        )
+    if not isinstance(rent, dict) or not isinstance(rent.get("plans"), list):
+        raise HTTPException(400, "Invalid rent section")
+    for pl in rent["plans"]:
+        if (
+            not isinstance(pl, dict)
+            or not is_bilingual(pl.get("name"))
+            or not isinstance(pl.get("features", []), list)
+        ):
+            raise HTTPException(400, "Invalid rent plan")
+    if not isinstance(service, dict) or not isinstance(service.get("items"), list):
+        raise HTTPException(400, "Invalid service section")
+    for it in service["items"]:
+        if (
+            not isinstance(it, dict)
+            or not is_bilingual(it.get("name"))
+            or not is_bilingual(it.get("price"))
+        ):
+            raise HTTPException(400, "Invalid service item")
+    return site
+
+
 def require_admin(password: str | None) -> None:
     if not ADMIN_PASSWORD:
         raise HTTPException(503, "ADMIN_PASSWORD is not configured")
     if not password or not secrets.compare_digest(password, ADMIN_PASSWORD):
         raise HTTPException(401, "Wrong password")
+
+
+def head_extras() -> str:
+    out = []
+    if GOOGLE_VERIFY:
+        out.append(
+            f'<meta name="google-site-verification" content="{html.escape(GOOGLE_VERIFY)}">'
+        )
+    if YANDEX_VERIFY:
+        out.append(
+            f'<meta name="yandex-verification" content="{html.escape(YANDEX_VERIFY)}">'
+        )
+    if re.fullmatch(r"G-[A-Z0-9]+", GA_ID):
+        out.append(
+            f'<script async src="https://www.googletagmanager.com/gtag/js?id={GA_ID}"></script>'
+            "<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}"
+            f'gtag("js",new Date());gtag("config","{GA_ID}");</script>'
+        )
+    if YM_ID.isdigit():
+        out.append(
+            "<script>(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};"
+            "k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})"
+            '(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");'
+            f'ym({YM_ID},"init",{{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true}});</script>'
+        )
+    return "\n".join(out)
 
 
 def base_url(request: Request) -> str:
@@ -108,6 +215,7 @@ def validate_products(items: list) -> list:
     if not isinstance(items, list):
         raise HTTPException(400, "Expected a list")
     seen = set()
+    cats = cat_ids()
     for p in items:
         if not isinstance(p, dict):
             raise HTTPException(400, "Each product must be an object")
@@ -115,7 +223,7 @@ def validate_products(items: list) -> list:
         if not pid or pid in seen or not all(c.isalnum() or c in "-_" for c in pid):
             raise HTTPException(400, f"Invalid or duplicate id: {pid!r}")
         seen.add(pid)
-        if p.get("cat") not in CATS:
+        if p.get("cat") not in cats:
             raise HTTPException(400, f"Invalid category for {pid}")
         if not isinstance(p.get("name"), dict) or not p["name"].get("uz"):
             raise HTTPException(400, f"Missing name.uz for {pid}")
@@ -129,6 +237,7 @@ def validate_products(items: list) -> list:
 
 # ---------- API ----------
 
+
 @app.get("/healthz")
 def healthz():
     return {"status": "ok"}
@@ -140,6 +249,20 @@ def get_products():
     return JSONResponse(read_products(), headers={"Cache-Control": "no-cache"})
 
 
+@app.get("/api/site")
+def get_site():
+    return JSONResponse(read_site(), headers={"Cache-Control": "no-cache"})
+
+
+@app.put("/api/site")
+async def put_site(
+    request: Request, x_admin_password: str | None = Header(default=None)
+):
+    require_admin(x_admin_password)
+    write_site(validate_site(await request.json()))
+    return {"ok": True}
+
+
 @app.post("/api/admin/login")
 def admin_login(x_admin_password: str | None = Header(default=None)):
     require_admin(x_admin_password)
@@ -147,7 +270,9 @@ def admin_login(x_admin_password: str | None = Header(default=None)):
 
 
 @app.put("/api/products")
-async def put_products(request: Request, x_admin_password: str | None = Header(default=None)):
+async def put_products(
+    request: Request, x_admin_password: str | None = Header(default=None)
+):
     require_admin(x_admin_password)
     items = validate_products(await request.json())
     write_products(items)
@@ -155,7 +280,10 @@ async def put_products(request: Request, x_admin_password: str | None = Header(d
 
 
 @app.post("/api/upload")
-async def upload(file: Annotated[UploadFile, File()], x_admin_password: str | None = Header(default=None)):
+async def upload(
+    file: Annotated[UploadFile, File()],
+    x_admin_password: str | None = Header(default=None),
+):
     require_admin(x_admin_password)
     ext = Path(file.filename or "").suffix.lower()
     if ext not in ALLOWED_IMG:
@@ -179,18 +307,53 @@ class Lead(BaseModel):
     page: str = ""
 
 
-def send_telegram(text: str) -> bool:
-    body = urllib.parse.urlencode({"chat_id": TG_CHAT, "text": text}).encode()
-    req = urllib.request.Request(f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage", data=body)
-    with urllib.request.urlopen(req, timeout=10) as r:
-        return r.status == 200
+def phone_digits(phone: str) -> str:
+    d = re.sub(r"\D", "", phone)
+    if len(d) == 9:
+        d = "998" + d
+    return d if 9 <= len(d) <= 15 else ""
+
+
+def lead_buttons(phone: str, base: str) -> list:
+    d = phone_digits(phone)
+    if not d:
+        return []
+    return [
+        [{"text": "📞 Qo'ng'iroq qilish", "url": f"{base}/call/{d}"}],
+        [
+            {"text": "✈️ Telegram'da yozish", "url": f"https://t.me/+{d}"},
+            {"text": "💬 WhatsApp", "url": f"https://wa.me/{d}"},
+        ],
+    ]
+
+
+def send_telegram(text: str, buttons: list | None = None) -> bool:
+    params = {"chat_id": TG_CHAT, "text": text}
+    if buttons:
+        params["reply_markup"] = json.dumps({"inline_keyboard": buttons})
+    req = urllib.request.Request(
+        f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage",
+        data=urllib.parse.urlencode(params).encode(),
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=10) as r:
+            return r.status == 200
+    except OSError:
+        if buttons:
+            return send_telegram(text)
+        raise
 
 
 @app.post("/api/lead")
-def lead(data: Lead):
+def lead(data: Lead, request: Request):
     if not data.name.strip() or not data.phone.strip():
         raise HTTPException(400, "Name and phone are required")
-    lines = [f"🆕 {data.topic or 'Ariza'}", f"👤 {data.name}", f"📞 {data.phone}"]
+    d = phone_digits(data.phone)
+    lines = [
+        f"🆕 {data.topic or 'Ariza'}",
+        f"👤 {data.name}",
+        f"📞 {'+' + d if d else data.phone}",
+    ]
     if data.company:
         lines.append(f"🏢 {data.company}")
     if data.note:
@@ -205,7 +368,7 @@ def lead(data: Lead):
     if not (TG_TOKEN and TG_CHAT):
         return {"ok": True, "telegram": False}
     try:
-        delivered = send_telegram(text)
+        delivered = send_telegram(text, lead_buttons(data.phone, base_url(request)))
     except OSError:
         delivered = False
     if not delivered:
@@ -217,22 +380,32 @@ def lead(data: Lead):
 def admin_leads(x_admin_password: str | None = Header(default=None)):
     require_admin(x_admin_password)
     f = DATA_DIR / "leads.jsonl"
-    rows = [json.loads(line) for line in f.read_text().splitlines()] if f.exists() else []
+    rows = (
+        [json.loads(line) for line in f.read_text().splitlines()] if f.exists() else []
+    )
     return rows[-200:][::-1]
 
 
 # ---------- SEO ----------
 
+
 @app.get("/robots.txt")
 def robots(request: Request):
-    return PlainTextResponse(f"User-agent: *\nDisallow: /admin\nDisallow: /api/\nAllow: /\n\nSitemap: {base_url(request)}/sitemap.xml\n")
+    return PlainTextResponse(
+        f"User-agent: *\nDisallow: /admin\nDisallow: /api/\nDisallow: /call/\nAllow: /\n\nSitemap: {base_url(request)}/sitemap.xml\n"
+    )
 
 
 @app.get("/sitemap.xml")
 def sitemap(request: Request):
     b = base_url(request)
-    urls = [(f"{b}/", "1.0")] + [(f"{b}/p/{urllib.parse.quote(p['id'])}", "0.8") for p in read_products()]
-    body = "".join(f"<url><loc>{html.escape(u)}</loc><priority>{pr}</priority></url>" for u, pr in urls)
+    urls = [(f"{b}/", "1.0")] + [
+        (f"{b}/p/{urllib.parse.quote(p['id'])}", "0.8") for p in read_products()
+    ]
+    body = "".join(
+        f"<url><loc>{html.escape(u)}</loc><priority>{pr}</priority></url>"
+        for u, pr in urls
+    )
     xml = f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{body}</urlset>'
     return Response(xml, media_type="application/xml")
 
@@ -268,6 +441,7 @@ PAGE = """<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css"><link rel="icon" type="image/png" href="/assets/favicon.png">
 <script type="application/ld+json">{ld}</script>
+{extras}
 </head>
 <body class="ppage">
 <div class="topbar"><div class="container topbar__inner">
@@ -311,8 +485,12 @@ def product_page(pid: str, request: Request, lang: str = "uz"):
     desc = tr(p.get("desc"), lang)
     e = html.escape
     ld = {
-        "@context": "https://schema.org", "@type": "Product", "name": title, "description": desc,
-        "image": [abs_url(b, u) for u in images], "url": url,
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": title,
+        "description": desc,
+        "image": [abs_url(b, u) for u in images],
+        "url": url,
     }
     if p.get("brand"):
         ld["brand"] = {"@type": "Brand", "name": p["brand"]}
@@ -320,8 +498,13 @@ def product_page(pid: str, request: Request, lang: str = "uz"):
         ld["sku"] = p["sku"]
     if p.get("price"):
         ld["offers"] = {
-            "@type": "Offer", "price": p["price"], "priceCurrency": "USD", "url": url,
-            "availability": "https://schema.org/InStock" if p.get("stock") != "order" else "https://schema.org/PreOrder",
+            "@type": "Offer",
+            "price": p["price"],
+            "priceCurrency": "USD",
+            "url": url,
+            "availability": "https://schema.org/InStock"
+            if p.get("stock") != "order"
+            else "https://schema.org/PreOrder",
             "seller": {"@type": "Organization", "name": "Master Coffee"},
         }
     rows = []
@@ -332,25 +515,46 @@ def product_page(pid: str, request: Request, lang: str = "uz"):
     rows += [(tr(s.get("k"), lang), tr(s.get("v"), lang)) for s in p.get("specs", [])]
     thumbs = ""
     if len(images) > 1:
-        thumbs = '<div class="thumbs">' + "".join(f'<img class="thumb" src="{e(abs_url(b, u))}" alt="">' for u in images) + "</div>"
+        thumbs = (
+            '<div class="thumbs">'
+            + "".join(
+                f'<img class="thumb" src="{e(abs_url(b, u))}" alt="">' for u in images
+            )
+            + "</div>"
+        )
     on_order = p.get("stock") == "order"
     page = PAGE.format(
-        lang=lang, title=e(title), desc=e(desc), url=e(url) + ("?lang=ru" if lang == "ru" else ""),
-        url_uz=e(url), url_ru=e(url) + "?lang=ru", image=e(abs_url(b, images[0])),
+        lang=lang,
+        title=e(title),
+        desc=e(desc),
+        url=e(url) + ("?lang=ru" if lang == "ru" else ""),
+        url_uz=e(url),
+        url_ru=e(url) + "?lang=ru",
+        image=e(abs_url(b, images[0])),
         ld=json.dumps(ld, ensure_ascii=False).replace("</", "<\\/"),
-        uz_active=" is-active" if lang == "uz" else "", ru_active=" is-active" if lang == "ru" else "",
-        home="Bosh sahifa" if lang == "uz" else "Главная", cat=e(tr(CAT_NAMES.get(p.get("cat")), lang)),
-        img0=e(abs_url(b, images[0])), thumbs=thumbs, price=e(price_text(p.get("price"), lang)),
+        uz_active=" is-active" if lang == "uz" else "",
+        ru_active=" is-active" if lang == "ru" else "",
+        home="Bosh sahifa" if lang == "uz" else "Главная",
+        cat=e(cat_name(p.get("cat"), lang)),
+        img0=e(abs_url(b, images[0])),
+        thumbs=thumbs,
+        price=e(price_text(p.get("price"), lang)),
         stock_cls=" stock--order" if on_order else "",
-        stock=("Buyurtma asosida" if lang == "uz" else "Под заказ") if on_order else ("Mavjud" if lang == "uz" else "В наличии"),
+        stock=("Buyurtma asosida" if lang == "uz" else "Под заказ")
+        if on_order
+        else ("Mavjud" if lang == "uz" else "В наличии"),
         specs="".join(f"<tr><td>{e(k)}</td><td>{e(v)}</td></tr>" for k, v in rows),
-        catalog="Katalog" if lang == "uz" else "Каталог", contacts="Aloqa" if lang == "uz" else "Контакты",
-        pid=e(pid), order="Buyurtma berish" if lang == "uz" else "Заказать",
+        catalog="Katalog" if lang == "uz" else "Каталог",
+        contacts="Aloqa" if lang == "uz" else "Контакты",
+        extras=head_extras(),
+        pid=e(pid),
+        order="Buyurtma berish" if lang == "uz" else "Заказать",
     )
     return HTMLResponse(page)
 
 
 # ---------- static ----------
+
 
 @app.get("/uploads/{name}")
 def uploads(name: str):
@@ -365,9 +569,28 @@ def admin_redirect():
     return FileResponse(ROOT / "admin.html")
 
 
-@app.get("/")
-def index():
-    return FileResponse(ROOT / "index.html")
+@app.get("/call/{digits}", response_class=HTMLResponse)
+def call(digits: str):
+    if not re.fullmatch(r"\d{9,15}", digits):
+        raise HTTPException(404)
+    tel = f"tel:+{digits}"
+    return HTMLResponse(
+        f'<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="robots" content="noindex">'
+        f'<meta name="viewport" content="width=device-width, initial-scale=1">'
+        f'<meta http-equiv="refresh" content="0;url={tel}"><title>+{digits}</title></head>'
+        f'<body style="font-family:sans-serif;text-align:center;padding:3rem">'
+        f'<a href="{tel}" style="font-size:1.6rem">📞 +{digits}</a></body></html>'
+    )
+
+
+@app.get("/", response_class=HTMLResponse)
+def index(request: Request):
+    page = (
+        (ROOT / "index.html")
+        .read_text()
+        .replace("https://mastercoffee.uz", base_url(request))
+    )
+    return HTMLResponse(page.replace("</head>", head_extras() + "\n</head>", 1))
 
 
 @app.get("/{path:path}")
