@@ -51,7 +51,8 @@ section[id]{scroll-margin-top:var(--nav-h)}
 .topbar__right{display:flex;gap:1.2rem}
 .topbar a:hover{color:#e8b98a}
 
-.nav{position:sticky;top:0;z-index:55;background:#fff;box-shadow:0 4px 20px rgba(40,24,14,.07)}
+.nav{position:sticky;top:0;z-index:55;background:#fff;box-shadow:0 4px 20px rgba(40,24,14,.07);transition:transform .3s ease}
+.nav.is-hidden{transform:translateY(-100%);box-shadow:none}
 .nav__inner{display:flex;align-items:center;gap:1.5rem;padding:.9rem 0}
 .logo{display:flex;align-items:center;gap:.6rem;font-weight:600;flex-shrink:0}
 .logo__mark{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--brand);color:#fff;font-family:"Playfair Display",serif;font-size:1.25rem}

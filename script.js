@@ -322,6 +322,17 @@ document.getElementById("serviceCta").addEventListener("click", () => {
 /* ---------- ui ---------- */
 document.getElementById("burger").addEventListener("click", () => document.getElementById("catnav").classList.toggle("is-open"));
 
+/* ---------- hide header while scrolling down ---------- */
+const navEl = document.getElementById("nav");
+let lastY = scrollY;
+addEventListener("scroll", () => {
+  const y = scrollY;
+  if(Math.abs(y - lastY) < 6) return;
+  const menuOpen = document.getElementById("catnav").classList.contains("is-open");
+  navEl.classList.toggle("is-hidden", y > lastY && y > navEl.offsetHeight && !menuOpen);
+  lastY = y;
+}, { passive:true });
+
 let toastTimer;
 function toast(text){
   let el = document.querySelector(".toast");
