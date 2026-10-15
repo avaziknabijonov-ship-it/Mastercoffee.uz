@@ -1,6 +1,7 @@
 let CATS = {}, SITE = null, siteDirty = false;
 let PW = sessionStorage.getItem("mc_admin") || "";
 let items = [], cur = -1, dirty = false;
+let WEB = { q:"", results:[], page:null, msg:"" };
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
 const api = (url, opts = {}) => fetch(url, { ...opts, headers:{ ...(opts.headers||{}), "X-Admin-Password": PW } });
@@ -53,12 +54,12 @@ function renderList(){
       <small>${esc(CATS[p.cat]||p.cat)} · ${p.price ? "$"+p.price : "narx so'rov"}</small></div></div>`).join("");
 }
 $("q").oninput = renderList;
-$("list").onclick = e => { const it = e.target.closest(".item"); if(it){ cur = +it.dataset.i; renderList(); renderEditor(); } };
+$("list").onclick = e => { const it = e.target.closest(".item"); if(it){ cur = +it.dataset.i; WEB = { q:"", results:[], page:null, msg:"" }; renderList(); renderEditor(); } };
 
 $("addBtn").onclick = () => {
   items.unshift({ id:"new-" + Date.now().toString(36), cat:"machines", sku:"", brand:"", price:0, old:0, badge:null, stock:"in",
     name:{uz:"Yangi mahsulot",ru:"Новый товар"}, desc:{uz:"",ru:""}, specs:[], images:[] });
-  cur = 0; setDirty(true); renderList(); renderEditor();
+  cur = 0; WEB = { q:"", results:[], page:null, msg:"" }; setDirty(true); renderList(); renderEditor();
 };
 
 const specsToText = specs => (specs||[]).map(s => [s.k?.uz, s.k?.ru, s.v?.uz, s.v?.ru].map(x => x||"").join(" | ")).join("\n");
@@ -84,6 +85,18 @@ function renderEditor(){
     <div class="row3">${f("Artikul (SKU)", "sku", p.sku)}${f("Yorliq (UZ), masalan Hit", "badge.uz", p.badge?.uz)}${f("Метка (RU)", "badge.ru", p.badge?.ru)}</div>
     <label>Xususiyatlar — har qatorda: Kalit UZ | Ключ RU | Qiymat UZ | Значение RU</label>
     <textarea data-k="specs" style="min-height:120px">${esc(specsToText(p.specs))}</textarea>
+    <details class="web" ${WEB.results.length || WEB.page ? "open" : ""}>
+      <summary>Internetdan qidirish (rasm, tavsif, xususiyatlar)</summary>
+      <div style="display:flex;gap:.5rem"><input id="wq" value="${esc(WEB.q || [p.brand, p.name?.ru || p.name?.uz].filter(Boolean).join(" "))}" placeholder="Model nomi, masalan Dr.Coffee F11"><button id="wgo">Qidirish</button></div>
+      <div style="display:flex;gap:.5rem;margin-top:.4rem"><input id="wurl" placeholder="yoki tovar sahifasi havolasi: https://..."><button class="ghost" id="wurlGo">Ma'lumotni olish</button></div>
+      <p class="hint" id="wmsg">${esc(WEB.msg)}</p>
+      ${webPageHtml(p)}
+      <div class="wres">${WEB.results.map((r,i) => `<div class="wcard">
+        <img src="${esc(r.thumb || r.image)}" alt="" loading="lazy" referrerpolicy="no-referrer">
+        <small title="${esc(r.title)}">${esc(r.title)}</small><small class="dom">${esc(r.domain)}${r.w ? ` · ${r.w}×${r.h}` : ""}</small>
+        <div><button data-wimg="${i}">+ Rasm</button>${r.page ? `<button class="ghost" data-wpage="${i}">Ma'lumot</button>` : ""}</div>
+      </div>`).join("")}</div>
+    </details>
     <label>Rasmlar (birinchisi asosiy)</label>
     <div class="imgs" id="imgs">${(p.images||[]).map((src,i) => `<div><img src="${esc(src)}" alt=""><button data-rm="${i}" title="O'chirish">×</button></div>`).join("")}</div>
     <div class="bar">
@@ -119,9 +132,88 @@ function renderEditor(){
     }
     renderEditor(); renderList();
   };
+  $("wgo").onclick = () => webSearch($("wq").value);
+  $("wq").onkeydown = e => { if(e.key === "Enter"){ e.preventDefault(); webSearch($("wq").value); } };
+  $("wurlGo").onclick = () => webPage($("wurl").value);
+  $("editor").querySelector(".wres").onclick = async e => {
+    const bi = e.target.closest("[data-wimg]"), bp = e.target.closest("[data-wpage]");
+    if(bi){ bi.disabled = true; await addWebImage(p, WEB.results[+bi.dataset.wimg].image); renderEditor(); renderList(); }
+    if(bp) webPage(WEB.results[+bp.dataset.wpage].page);
+  };
+  const wp = $("wpApply");
+  if(wp) wp.onclick = () => applyWebPage(p);
+  $("editor").querySelectorAll("[data-wpimg]").forEach(b => b.onclick = async () => {
+    b.disabled = true; await addWebImage(p, WEB.page.images[+b.dataset.wpimg]); renderEditor(); renderList();
+  });
   $("up").onclick = () => move(-1);
   $("down").onclick = () => move(1);
   $("del").onclick = () => { if(confirm("Mahsulot o'chirilsinmi?")){ items.splice(cur,1); cur = -1; setDirty(true); renderList(); renderEditor(); } };
+}
+
+function setWebMsg(m){ WEB.msg = m; const el = $("wmsg"); if(el) el.textContent = m; }
+
+async function webSearch(q){
+  q = q.trim();
+  if(!q) return;
+  WEB.q = q; WEB.page = null;
+  setWebMsg("Qidirilmoqda...");
+  const r = await api("/api/admin/websearch?q=" + encodeURIComponent(q));
+  const d = await r.json().catch(() => ({}));
+  WEB.results = r.ok ? d.results : [];
+  WEB.msg = r.ok ? `${WEB.results.length} ta natija. "+ Rasm" — rasmni tovarga qo'shadi, "Ma'lumot" — sahifadan nom, tavsif va xususiyatlarni oladi.` : "Xato: " + (d.detail || r.status);
+  renderEditor();
+}
+
+async function webPage(url){
+  url = (url || "").trim();
+  if(!/^https?:\/\//.test(url)){ setWebMsg("Havola https:// bilan boshlanishi kerak"); return; }
+  setWebMsg("Sahifa o'qilmoqda...");
+  const r = await api("/api/admin/webpage?url=" + encodeURIComponent(url));
+  const d = await r.json().catch(() => ({}));
+  if(!r.ok){ setWebMsg("Bu sahifani o'qib bo'lmadi (" + (d.detail || r.status) + "). Boshqa natijani tanlang."); return; }
+  WEB.page = d;
+  WEB.msg = "";
+  renderEditor();
+  $("editor").querySelector(".wpage")?.scrollIntoView({ behavior:"smooth", block:"center" });
+}
+
+async function addWebImage(p, url){
+  const r = await api("/api/admin/fetch-image", { method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify({ url }) });
+  (p.images ||= []).push(r.ok ? (await r.json()).url : url);
+  setDirty(true);
+  WEB.msg = r.ok ? "Rasm qo'shildi ✓" : "Rasm havola sifatida qo'shildi (yuklab bo'lmadi)";
+}
+
+function webPageHtml(p){
+  const w = WEB.page;
+  if(!w) return "";
+  const chk = (k, label, val) => val ? `<label class="wchk"><input type="checkbox" data-wf="${k}" checked> <b>${label}:</b> ${esc(String(val).slice(0, 300))}</label>` : "";
+  return `<div class="wpage">
+    <div class="hint">Manba: <a href="${esc(w.url)}" target="_blank" rel="noopener">${esc(w.url.slice(0, 80))}</a></div>
+    ${chk("title", "Nomi", w.title)}
+    ${chk("desc", "Tavsif", w.desc)}
+    ${chk("brand", "Brend", w.brand)}
+    ${chk("sku", "Artikul", w.sku)}
+    ${w.specs.length ? `<label class="wchk"><input type="checkbox" data-wf="specs" checked> <b>Xususiyatlar (${w.specs.length}):</b> ${esc(w.specs.slice(0, 4).map(x => x.k + ": " + x.v).join("; "))}${w.specs.length > 4 ? "..." : ""}</label>` : ""}
+    ${w.price ? `<div class="hint">Saytdagi narx: <b>${esc(w.price)} ${esc(w.currency)}</b> — narxni o'zingiz $ da kiriting.</div>` : ""}
+    ${w.images.length ? `<div class="imgs">${w.images.map((src,i) => `<div><img src="${esc(src)}" alt="" referrerpolicy="no-referrer"><button data-wpimg="${i}" title="Qo'shish" style="background:#2f7a44">+</button></div>`).join("")}</div>` : ""}
+    <p class="hint">Matnlar RU maydonlarga yoziladi, UZ maydon bo'sh yoki "Yangi mahsulot" bo'lsa, unga ham.</p>
+    <div class="bar"><button id="wpApply">Belgilanganlarni tovarga qo'yish</button></div>
+  </div>`;
+}
+
+function applyWebPage(p){
+  const w = WEB.page;
+  const on = k => $("editor").querySelector(`[data-wf="${k}"]`)?.checked;
+  p.name ||= {}; p.desc ||= {};
+  if(on("title")){ p.name.ru = w.title; if(!p.name.uz || p.name.uz === "Yangi mahsulot") p.name.uz = w.title; }
+  if(on("desc")){ p.desc.ru = w.desc; if(!p.desc.uz) p.desc.uz = w.desc; }
+  if(on("brand")) p.brand = w.brand;
+  if(on("sku")) p.sku = w.sku;
+  if(on("specs")) p.specs = w.specs.map(x => ({ k:{ uz:x.k, ru:x.k }, v:{ uz:x.v, ru:x.v } }));
+  WEB.msg = "Ma'lumotlar qo'yildi ✓ Tekshirib, \"Saytga saqlash\" ni bosing.";
+  WEB.page = null;
+  setDirty(true); renderEditor(); renderList();
 }
 
 function move(d){
