@@ -1,9 +1,11 @@
 import html
+import ipaddress
 import json
 import os
 import re
 import secrets
 import shutil
+import socket
 import threading
 import urllib.parse
 import urllib.request
@@ -291,6 +293,268 @@ async def upload(
     data = await file.read()
     if len(data) > MAX_UPLOAD:
         raise HTTPException(400, "File too large (max 8 MB)")
+    name = uuid.uuid4().hex[:12] + ext
+    (UPLOAD_DIR / name).write_bytes(data)
+    return {"url": f"/uploads/{name}"}
+
+
+WEB_UA = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+)
+IMG_TYPES = {
+    "image/jpeg": ".jpg",
+    "image/png": ".png",
+    "image/webp": ".webp",
+    "image/gif": ".gif",
+}
+
+
+def public_url(url: str) -> str:
+    u = urllib.parse.urlparse(url.strip())
+    if u.scheme not in ("http", "https") or not u.hostname:
+        raise HTTPException(400, "Invalid URL")
+    try:
+        addrs = {a[4][0] for a in socket.getaddrinfo(u.hostname, None)}
+    except OSError:
+        raise HTTPException(400, "Host not found")
+    for a in addrs:
+        ip = ipaddress.ip_address(a)
+        if not ip.is_global:
+            raise HTTPException(400, "Invalid URL")
+    return u.geturl()
+
+
+class SafeRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return super().redirect_request(req, fp, code, msg, headers, public_url(newurl))
+
+
+WEB_OPENER = urllib.request.build_opener(SafeRedirect)
+
+
+def http_get(url: str, limit: int, accept: str = "*/*") -> tuple[bytes, str]:
+    req = urllib.request.Request(
+        public_url(url),
+        headers={
+            "User-Agent": WEB_UA,
+            "Accept": accept,
+            "Accept-Language": "ru,uz;q=0.9,en;q=0.8",
+        },
+    )
+    try:
+        with WEB_OPENER.open(req, timeout=15) as r:
+            data = r.read(limit + 1)
+            ctype = r.headers.get("Content-Type", "")
+    except (OSError, ValueError) as e:
+        raise HTTPException(502, f"Could not load: {e}")
+    if len(data) > limit:
+        raise HTTPException(400, "Response too large")
+    return data, ctype
+
+
+def find_dicts(obj, pred) -> list:
+    out = []
+    stack = [obj]
+    while stack:
+        o = stack.pop()
+        if isinstance(o, dict):
+            if pred(o):
+                out.append(o)
+            stack.extend(o.values())
+        elif isinstance(o, list):
+            stack.extend(o)
+    return out
+
+
+def yandex_images(q: str) -> list:
+    url = "https://yandex.ru/images/search?" + urllib.parse.urlencode({"text": q})
+    page = http_get(url, 4_000_000, "text/html")[0].decode("utf-8", "replace")
+    states = re.findall(r'data-state="([^"]*)"', page)
+    seen, out = set(), []
+    for st in states:
+        if "origUrl" not in st:
+            continue
+        try:
+            data = json.loads(html.unescape(st))
+        except ValueError:
+            continue
+        for it in find_dicts(data, lambda d: "origUrl" in d and "snippet" in d):
+            img = it.get("origUrl", "")
+            if not img.startswith("http") or img in seen:
+                continue
+            seen.add(img)
+            sn = it.get("snippet") or {}
+            thumb = it.get("image", "")
+            out.append(
+                {
+                    "image": img,
+                    "thumb": ("https:" + thumb) if thumb.startswith("//") else thumb,
+                    "title": sn.get("title") or it.get("alt", ""),
+                    "domain": sn.get("domain", ""),
+                    "page": sn.get("url", ""),
+                    "w": it.get("origWidth"),
+                    "h": it.get("origHeight"),
+                }
+            )
+    return out
+
+
+@app.get("/api/admin/websearch")
+def websearch(q: str, x_admin_password: str | None = Header(default=None)):
+    require_admin(x_admin_password)
+    q = q.strip()[:200]
+    if not q:
+        raise HTTPException(400, "Empty query")
+    results = yandex_images(q)
+    if not results:
+        raise HTTPException(
+            502, "Search returned no results (search engine may be blocking the server)"
+        )
+    return {"results": results[:40]}
+
+
+def strip_tags(s: str) -> str:
+    return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", s or ""))).strip()
+
+
+def meta_content(page: str, *names: str) -> str:
+    for n in names:
+        for pat in (
+            rf'<meta[^>]+(?:property|name|itemprop)=["\']{re.escape(n)}["\'][^>]*content=["\']([^"\']*)',
+            rf'<meta[^>]+content=["\']([^"\']*)["\'][^>]*(?:property|name|itemprop)=["\']{re.escape(n)}["\']',
+        ):
+            m = re.search(pat, page, re.IGNORECASE)
+            if m and m.group(1).strip():
+                return html.unescape(m.group(1)).strip()
+    return ""
+
+
+def ld_products(page: str) -> list:
+    out = []
+    for raw in re.findall(
+        r"<script[^>]+application/ld\+json[^>]*>(.*?)</script>",
+        page,
+        re.DOTALL | re.IGNORECASE,
+    ):
+        try:
+            data = json.loads(raw.strip())
+        except ValueError:
+            continue
+        out += find_dicts(
+            data,
+            lambda d: (
+                d.get("@type") == "Product"
+                or (isinstance(d.get("@type"), list) and "Product" in d["@type"])
+            ),
+        )
+    return out
+
+
+def as_list(v) -> list:
+    return v if isinstance(v, list) else [v] if v else []
+
+
+def page_specs(page: str) -> list:
+    rows = []
+    for tr in re.findall(r"<tr[^>]*>(.*?)</tr>", page, re.DOTALL | re.IGNORECASE):
+        cells = [
+            strip_tags(c)
+            for c in re.findall(
+                r"<t[hd][^>]*>(.*?)</t[hd]>", tr, re.DOTALL | re.IGNORECASE
+            )
+        ]
+        if (
+            len(cells) == 2
+            and all(cells)
+            and len(cells[0]) < 60
+            and len(cells[1]) < 120
+        ):
+            rows.append(cells)
+    for dl in re.findall(r"<dl[^>]*>(.*?)</dl>", page, re.DOTALL | re.IGNORECASE):
+        dts = [
+            strip_tags(x)
+            for x in re.findall(r"<dt[^>]*>(.*?)</dt>", dl, re.DOTALL | re.IGNORECASE)
+        ]
+        dds = [
+            strip_tags(x)
+            for x in re.findall(r"<dd[^>]*>(.*?)</dd>", dl, re.DOTALL | re.IGNORECASE)
+        ]
+        rows += [
+            [k, v] for k, v in zip(dts, dds) if k and v and len(k) < 60 and len(v) < 120
+        ]
+    seen, out = set(), []
+    for k, v in rows:
+        if k.lower() not in seen:
+            seen.add(k.lower())
+            out.append({"k": k.rstrip(":"), "v": v})
+    return out[:30]
+
+
+@app.get("/api/admin/webpage")
+def webpage(url: str, x_admin_password: str | None = Header(default=None)):
+    require_admin(x_admin_password)
+    raw, ctype = http_get(url, 6_000_000, "text/html")
+    m = re.search(r"charset=([\w-]+)", ctype) or re.search(
+        rb'<meta[^>]+charset=["\']?([\w-]+)', raw[:4000]
+    )
+    enc = m.group(1) if m else "utf-8"
+    enc = enc.decode() if isinstance(enc, bytes) else enc
+    try:
+        page = raw.decode(enc, "replace")
+    except LookupError:
+        page = raw.decode("utf-8", "replace")
+    prods = ld_products(page)
+    p = prods[0] if prods else {}
+    offer = next(iter(as_list(p.get("offers"))), {}) if p else {}
+    if isinstance(offer, dict) and "price" not in offer and offer.get("lowPrice"):
+        offer = {**offer, "price": offer["lowPrice"]}
+    brand = p.get("brand", "")
+    if isinstance(brand, dict):
+        brand = brand.get("name", "")
+    images = []
+    for im in as_list(p.get("image")):
+        im = im.get("url", "") if isinstance(im, dict) else im
+        if isinstance(im, str) and im:
+            images.append(urllib.parse.urljoin(url, im))
+    og_img = meta_content(page, "og:image", "og:image:url", "twitter:image")
+    if og_img:
+        images.append(urllib.parse.urljoin(url, og_img))
+    specs = [
+        {"k": str(a.get("name", "")), "v": str(a.get("value", ""))}
+        for a in as_list(p.get("additionalProperty"))
+        if isinstance(a, dict) and a.get("name") and a.get("value")
+    ] or page_specs(page)
+    title_tag = re.search(r"<title[^>]*>(.*?)</title>", page, re.DOTALL | re.IGNORECASE)
+    return {
+        "url": url,
+        "title": strip_tags(p.get("name", ""))
+        or meta_content(page, "og:title", "twitter:title")
+        or (strip_tags(title_tag.group(1)) if title_tag else ""),
+        "desc": strip_tags(p.get("description", ""))
+        or meta_content(page, "og:description", "description", "twitter:description"),
+        "brand": strip_tags(str(brand)),
+        "sku": strip_tags(str(p.get("sku") or p.get("mpn") or "")),
+        "price": str(offer.get("price", "") if isinstance(offer, dict) else "")
+        or meta_content(page, "product:price:amount", "price"),
+        "currency": (offer.get("priceCurrency", "") if isinstance(offer, dict) else "")
+        or meta_content(page, "product:price:currency", "priceCurrency"),
+        "images": list(dict.fromkeys(images))[:10],
+        "specs": specs,
+    }
+
+
+class ImageUrl(BaseModel):
+    url: str
+
+
+@app.post("/api/admin/fetch-image")
+def fetch_image(body: ImageUrl, x_admin_password: str | None = Header(default=None)):
+    require_admin(x_admin_password)
+    data, ctype = http_get(body.url, MAX_UPLOAD, "image/*")
+    ext = IMG_TYPES.get(ctype.split(";")[0].strip().lower())
+    if not ext:
+        raise HTTPException(400, "Not an image")
     name = uuid.uuid4().hex[:12] + ext
     (UPLOAD_DIR / name).write_bytes(data)
     return {"url": f"/uploads/{name}"}
