@@ -7,6 +7,7 @@ import secrets
 import sqlite3
 import uuid
 import zipfile
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from xml.sax.saxutils import escape
@@ -32,7 +33,7 @@ def connect():
 
 
 def initialize():
-    with connect() as db:
+    with database() as db:
         db.executescript("""
         CREATE TABLE IF NOT EXISTS employees(
           id TEXT PRIMARY KEY, name TEXT NOT NULL, telegram_id TEXT UNIQUE,
@@ -44,7 +45,7 @@ def initialize():
           active INTEGER NOT NULL DEFAULT 1, created_at TEXT NOT NULL, updated_at TEXT NOT NULL
         );
         CREATE TABLE IF NOT EXISTS suppliers(
-          id TEXT PRIMARY KEY, name TEXT NOT NULL, phone TEXT NOT NULL DEFAULT '',
+          id TEXT PRIMARY KEY, name TEXT NOT NULL COLLATE NOCASE UNIQUE, phone TEXT NOT NULL DEFAULT '',
           note TEXT NOT NULL DEFAULT '', active INTEGER NOT NULL DEFAULT 1,
           created_at TEXT NOT NULL, updated_at TEXT NOT NULL
         );
@@ -63,7 +64,20 @@ def initialize():
         CREATE INDEX IF NOT EXISTS receipt_items_product_idx ON receipt_items(product_id);
         CREATE INDEX IF NOT EXISTS receipts_date_idx ON receipts(received_at);
         """)
+        if db.execute("SELECT 1 FROM suppliers WHERE name=? COLLATE NOCASE", ("EHORECA",)).fetchone() is None:
+            stamp = now()
+            db.execute("INSERT INTO suppliers VALUES(?,?,?,?,1,?,?)", ("supplier-ehoreca", "EHORECA", "", "Excel yetkazib beruvchi", stamp, stamp))
 initialize()
+
+
+@contextmanager
+def database():
+    db = connect()
+    try:
+        with db:
+            yield db
+    finally:
+        db.close()
 
 
 def require_admin(password: str | None):
@@ -102,7 +116,7 @@ def _product_map():
 def inventory_snapshot(x_admin_password: str | None = Header(default=None)):
     require_admin(x_admin_password)
     products = _product_map()
-    with connect() as db:
+    with database() as db:
         employees = [dict(r) for r in db.execute("SELECT * FROM employees ORDER BY active DESC,name COLLATE NOCASE")]
         warehouses = [dict(r) for r in db.execute("SELECT * FROM warehouses ORDER BY active DESC,name COLLATE NOCASE")]
         suppliers = [dict(r) for r in db.execute("SELECT * FROM suppliers ORDER BY active DESC,name COLLATE NOCASE")]
@@ -145,7 +159,7 @@ async def create_record(kind: str, request: Request, x_admin_password: str | Non
     if not isinstance(data, dict):
         raise HTTPException(400, "Expected an object")
     stamp, item_id = now(), uuid.uuid4().hex
-    with _lock, connect() as db:
+    with _lock, database() as db:
         if kind == "employees":
             name = text(data.get("name"), "name", required=True)
             telegram_id = text(data.get("telegram_id"), "telegram_id", 32)
@@ -196,7 +210,7 @@ def _save_receipt(db, receipt_id, data, stamp):
 def _get(kind, item_id):
     table={"employees":"employees","warehouses":"warehouses","suppliers":"suppliers"}.get(kind)
     if not table: raise HTTPException(404,"Unknown section")
-    with connect() as db:
+    with database() as db:
         row=db.execute(f"SELECT * FROM {table} WHERE id=?",(item_id,)).fetchone()
         return dict(row) if row else None
 
@@ -207,7 +221,7 @@ async def update_record(kind: str, item_id: str, request: Request, x_admin_passw
     data=await request.json()
     if not isinstance(data,dict): raise HTTPException(400,"Expected an object")
     stamp=now()
-    with _lock, connect() as db:
+    with _lock, database() as db:
         if kind == "receipts":
             if db.execute("SELECT 1 FROM receipts WHERE id=?",(item_id,)).fetchone() is None: raise HTTPException(404,"Receipt not found")
             db.execute("DELETE FROM receipts WHERE id=?",(item_id,))
@@ -238,7 +252,7 @@ async def update_record(kind: str, item_id: str, request: Request, x_admin_passw
 @router.delete("/api/admin/inventory/{kind}/{item_id}")
 def delete_record(kind: str, item_id: str, x_admin_password: str | None = Header(default=None)):
     require_admin(x_admin_password)
-    with _lock,connect() as db:
+    with _lock,database() as db:
         if kind=="receipts":
             cur=db.execute("DELETE FROM receipts WHERE id=?",(item_id,))
             if not cur.rowcount: raise HTTPException(404,"Receipt not found")
@@ -273,7 +287,7 @@ def export_inventory(x_admin_password: str | None = Header(default=None)):
     require_admin(x_admin_password)
     products=_product_map()
     rows=[["MASTERCOFFEE · OMBOR VA KIRIM HISOBOTI"],["Hisobot vaqti",now()],[],["OMBOR QOLDIG'I"],["Artikul","Mahsulot","Ombor","Miqdor","Kirim qiymati"]]
-    with connect() as db:
+    with database() as db:
         for r in db.execute("""
           SELECT ri.sku,ri.product_id,ri.product_name,w.name warehouse_name,
                  SUM(ri.quantity) quantity,SUM(ri.quantity*ri.unit_cost) value
