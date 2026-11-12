@@ -77,6 +77,7 @@ PUBLIC_FILES = {
     "robots.txt",
     "admin.html",
     "admin.js",
+    "inventory.js",
 }
 PUBLIC_DIRS = {"assets"}
 ALLOWED_IMG = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
@@ -604,3 +605,8 @@ def static(path: str):
     if not f.is_relative_to(ROOT) or not f.is_file():
         raise HTTPException(404)
     return FileResponse(f)
+
+
+from app.inventory import router as inventory_router
+
+app.include_router(inventory_router)
