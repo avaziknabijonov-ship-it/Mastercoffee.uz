@@ -67,9 +67,6 @@ def initialize():
         if db.execute("SELECT 1 FROM suppliers WHERE name=? COLLATE NOCASE", ("EHORECA",)).fetchone() is None:
             stamp = now()
             db.execute("INSERT INTO suppliers VALUES(?,?,?,?,1,?,?)", ("supplier-ehoreca", "EHORECA", "", "Excel yetkazib beruvchi", stamp, stamp))
-initialize()
-
-
 @contextmanager
 def database():
     db = connect()
@@ -89,6 +86,9 @@ def require_admin(password: str | None):
 
 def now():
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+initialize()
 
 
 def text(value, field, limit=240, required=False):
