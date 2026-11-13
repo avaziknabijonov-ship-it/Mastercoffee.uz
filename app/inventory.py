@@ -272,6 +272,7 @@ def _column_name(n):
 
 def _sheet_xml(rows):
     body=[]
+    max_columns=max((len(row) for row in rows),default=1)
     for ri,row in enumerate(rows,1):
         cells=[]
         for ci,value in enumerate(row,1):
@@ -279,8 +280,8 @@ def _sheet_xml(rows):
             value=escape(str(value if value is not None else ""))
             cells.append(f'<c r="{ref}" t="inlineStr"><is><t xml:space="preserve">{value}</t></is></c>')
         body.append(f'<row r="{ri}">{"".join(cells)}</row>')
-    return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>'+''.join(body)+'</sheetData></worksheet>'
-
+    dimension=f'<dimension ref="A1:{_column_name(max_columns)}{len(rows)}"/>'
+    return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'+dimension+'<sheetData>'+''.join(body)+'</sheetData></worksheet>'
 
 @router.get("/api/admin/inventory.xlsx")
 def export_inventory(x_admin_password: str | None = Header(default=None)):
