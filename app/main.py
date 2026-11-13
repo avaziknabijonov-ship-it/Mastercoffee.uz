@@ -632,6 +632,11 @@ def index(request: Request):
     return HTMLResponse(page.replace("</head>", head_extras() + "\n</head>", 1))
 
 
+from app.inventory import router as inventory_router
+
+app.include_router(inventory_router)
+
+
 @app.get("/{path:path}")
 def static(path: str):
     parts = Path(path).parts
@@ -644,7 +649,3 @@ def static(path: str):
         raise HTTPException(404)
     return FileResponse(f)
 
-
-from app.inventory import router as inventory_router
-
-app.include_router(inventory_router)
