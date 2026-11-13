@@ -287,7 +287,14 @@ def _sheet_xml(rows):
 def export_inventory(x_admin_password: str | None = Header(default=None)):
     require_admin(x_admin_password)
     products=_product_map()
-    rows=[["MASTERCOFFEE · OMBOR VA KIRIM HISOBOTI"],["Hisobot vaqti",now()],[],["OMBOR QOLDIG'I"],["Artikul","Mahsulot","Ombor","Miqdor","Kirim qiymati"]]
+    rows=[["MASTERCOFFEE · OMBOR VA KIRIM HISOBOTI"],["Hisobot vaqti",now()],[],["SAYT KATALOGI"],["Artikul","Mahsulot","Brend","Kategoriya","Holat","Yetkazish"]]
+    for p in sorted(products.values(),key=lambda x:str(x.get("sku",""))):
+        name=((p.get("name") or {}).get("uz") or (p.get("name") or {}).get("ru") or p.get("id"))
+        delivery=p.get("lead_time_days")
+        delivery_text=(f"{delivery[0]}–{delivery[1]} kun" if isinstance(delivery,list) and len(delivery)==2 else "")
+        status="Buyurtma asosida" if p.get("stock")=="order" else "Ombor"
+        rows.append([p.get("sku",""),name,p.get("brand",""),p.get("vendor_category",p.get("cat","")),status,delivery_text])
+    rows += [[],["OMBOR QOLDI'GI"],["Artikul","Mahsulot","Ombor","Miqdor","Kirim qiymati"]]
     with database() as db:
         for r in db.execute("""
           SELECT ri.sku,ri.product_id,ri.product_name,w.name warehouse_name,
