@@ -16,7 +16,7 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     env:
-      DATA_DIR: ${{ runner.temp }}/mastercoffee-ci-data
+      DATA_DIR: /tmp/mastercoffee-ci-data
       ADMIN_PASSWORD: ci-only-password
     steps:
       - uses: actions/checkout@v4
