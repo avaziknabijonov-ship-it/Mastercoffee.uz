@@ -87,7 +87,7 @@ function cardHtml(p){
         <span class="card__cat">${catName(p.cat)}</span>
         <h3 data-open="${p.id}">${esc(tr(p.name))}</h3>
         <p>${esc(tr(p.desc))}</p>
-        <span class="stock ${p.stock === "order" ? "stock--order" : ""}">${p.stock === "order" ? t("product.onOrder") : t("product.inStock")}</span>
+        <span class="stock ${p.stock === "order" ? "stock--order" : ""}">${p.stock === "order" ? (t("product.onOrder") + (p.lead_time_days ? (lang === "uz" ? " · " + p.lead_time_days[0] + "–" + p.lead_time_days[1] + " kun ichida" : " · " + p.lead_time_days[0] + "–" + p.lead_time_days[1] + " дня") : "")) : t("product.inStock")}</span>
         <div class="card__foot">
           <span class="price">${fmt(p.price)}${sale ? `<s>${fmt(p.old)}</s>` : ""}</span>
           <button class="add" data-add="${p.id}">${t("product.add")}</button>
