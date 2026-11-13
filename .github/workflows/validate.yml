@@ -1,10 +1,6 @@
 name: Validate site
 
 on:
-  push:
-    branches:
-      - main
-      - feat/warehouse-supplier-employee-management
   pull_request:
     branches:
       - main
@@ -53,7 +49,7 @@ jobs:
 
           with open("/tmp/mastercoffee-health.json", encoding="utf-8") as file:
               health = json.load(file)
-          assert health.get("ok") is True, health
+          assert health.get("status") == "ok", health
 
           request = urllib.request.Request(
               "http://127.0.0.1:5173/api/admin/inventory",
