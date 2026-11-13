@@ -1,0 +1,75 @@
+name: Validate site
+
+on:
+  push:
+    branches:
+      - main
+      - feat/warehouse-supplier-employee-management
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      DATA_DIR: ${{ runner.temp }}/mastercoffee-ci-data
+      ADMIN_PASSWORD: ci-only-password
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install app
+        run: python -m pip install .
+      - name: Check Python syntax
+        run: python -m compileall -q app
+      - name: Check JavaScript syntax
+        run: |
+          for file in admin.js inventory.js script.js config.js i18n.js; do
+            node --check "$file"
+          done
+      - name: Smoke-test health and inventory API
+        run: |
+          set -euo pipefail
+          python -m uvicorn app.main:app --host 127.0.0.1 --port 5173 >/tmp/mastercoffee-uvicorn.log 2>&1 &
+          app_pid=$!
+          trap 'kill "$app_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:5173/healthz >/tmp/mastercoffee-health.json; then
+              break
+            fi
+            sleep 1
+          done
+          python - <<'PY'
+          import json
+          import urllib.request
+
+          with open("/tmp/mastercoffee-health.json", encoding="utf-8") as file:
+              health = json.load(file)
+          assert health.get("ok") is True, health
+
+          request = urllib.request.Request(
+              "http://127.0.0.1:5173/api/admin/inventory",
+              headers={"X-Admin-Password": "ci-only-password"},
+          )
+          with urllib.request.urlopen(request, timeout=10) as response:
+              inventory = json.load(response)
+          assert any(
+              supplier["name"].casefold() == "ehoreca"
+              for supplier in inventory["suppliers"]
+          ), "EHORECA supplier was not initialized"
+          assert len(inventory["products"]) >= 360, (
+              f"Expected the imported catalog; got {len(inventory['products'])} products"
+          )
+          print(
+              "Health passed; inventory API initialized with "
+              f"{len(inventory['products'])} catalog products and EHORECA supplier."
+          )
+          PY
