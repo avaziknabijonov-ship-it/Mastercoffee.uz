@@ -51,6 +51,8 @@ DATA_DIR = pick_data_dir()
 UPLOAD_DIR = DATA_DIR / "uploads"
 PRODUCTS_FILE = DATA_DIR / "products.json"
 SEED_FILE = ROOT / "data" / "products.json"
+EHORECA_SEED_FILE = ROOT / "data" / "ehoreca-products.json"
+EHORECA_IMPORT_MARKER = DATA_DIR / ".ehoreca-products-imported-v1"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 SITE_FILE = DATA_DIR / "site.json"
 SITE_SEED = ROOT / "data" / "site.json"
@@ -113,6 +115,42 @@ def write_site(site: dict) -> None:
         tmp = SITE_FILE.with_suffix(".tmp")
         tmp.write_text(json.dumps(site, ensure_ascii=False, indent=1))
         tmp.replace(SITE_FILE)
+
+
+def import_ehoreca_catalog_once() -> None:
+    """Merge the source-only EHORECA order catalog into persisted site data once."""
+    if EHORECA_IMPORT_MARKER.exists() or not EHORECA_SEED_FILE.is_file():
+        return
+    payload = json.loads(EHORECA_SEED_FILE.read_text(encoding="utf-8"))
+    seed_products = payload.get("products", [])
+    seed_categories = payload.get("categories", [])
+    if not isinstance(seed_products, list) or not isinstance(seed_categories, list):
+        raise RuntimeError("Invalid EHORECA catalog seed")
+
+    products = read_products()
+    product_ids = {str(p.get("id")) for p in products if isinstance(p, dict)}
+    merged_products = products + [
+        p for p in seed_products
+        if isinstance(p, dict) and str(p.get("id")) not in product_ids
+    ]
+
+    site = read_site()
+    categories = site.get("categories", [])
+    category_ids = {str(c.get("id")) for c in categories if isinstance(c, dict)}
+    merged_categories = categories + [
+        c for c in seed_categories
+        if isinstance(c, dict) and str(c.get("id")) not in category_ids
+    ]
+
+    write_products(merged_products)
+    site["categories"] = merged_categories
+    write_site(site)
+    marker_tmp = EHORECA_IMPORT_MARKER.with_suffix(".tmp")
+    marker_tmp.write_text("imported\\n", encoding="utf-8")
+    marker_tmp.replace(EHORECA_IMPORT_MARKER)
+
+
+import_ehoreca_catalog_once()
 
 
 def cat_ids() -> set:
