@@ -294,7 +294,7 @@ def export_inventory(x_admin_password: str | None = Header(default=None)):
         delivery_text=(f"{delivery[0]}–{delivery[1]} kun" if isinstance(delivery,list) and len(delivery)==2 else "")
         status="Buyurtma asosida" if p.get("stock")=="order" else "Ombor"
         rows.append([p.get("sku",""),name,p.get("brand",""),p.get("vendor_category",p.get("cat","")),status,delivery_text])
-    rows += [[],["OMBOR QOLDI'GI"],["Artikul","Mahsulot","Ombor","Miqdor","Kirim qiymati"]]
+    rows += [[],["OMBOR QOLDIGI"],["Artikul","Mahsulot","Ombor","Miqdor","Kirim qiymati"]]
     with database() as db:
         for r in db.execute("""
           SELECT ri.sku,ri.product_id,ri.product_name,w.name warehouse_name,
