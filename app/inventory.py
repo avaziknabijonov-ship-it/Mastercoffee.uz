@@ -16,7 +16,7 @@ from fastapi import APIRouter, Header, HTTPException, Request
 from fastapi.responses import Response
 
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
-DATA_DIR = Path(os.environ.get("DATA_DIR") or ("/data" if Path("/data").is_dir() else Path(__file__).resolve().parent.parent / "var"))
+DATA_DIR = Path(os.environ.get("DATA_DIR") or ("/data" if Path("/data").is_dir() and os.access("/data", os.W_OK) else Path(__file__).resolve().parent.parent / "var"))
 DB_PATH = DATA_DIR / "inventory.sqlite3"
 PRODUCTS_PATH = DATA_DIR / "products.json"
 router = APIRouter()
