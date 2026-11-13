@@ -306,6 +306,9 @@ def export_inventory(x_admin_password: str | None = Header(default=None)):
           LEFT JOIN receipt_items ri ON ri.receipt_id=rc.id
           GROUP BY s.id ORDER BY s.name COLLATE NOCASE
         """): rows.append([r["name"],r["phone"],round(r["total"],2)])
+        rows += [[],["OMBORLAR"],["Ombor","Manzil","Faol"]]
+        for r in db.execute("SELECT name,location,active FROM warehouses ORDER BY name COLLATE NOCASE"):
+            rows.append([r["name"],r["location"],"Ha" if r["active"] else "Yo'q"])
         rows += [[],["KIRIMLAR"],["Sana","Yetkazib beruvchi","Ombor","Xodim","Mahsulot","Artikul","Miqdor","Birlik narxi","Valyuta"]]
         for r in db.execute("""
           SELECT rc.received_at,s.name supplier,w.name warehouse,COALESCE(e.name,'') employee,
