@@ -1,9 +1,10 @@
 name: Validate site
 
 on:
-  pull_request:
+  push:
     branches:
       - main
+      - feat/warehouse-supplier-employee-management
 
 permissions:
   contents: read
