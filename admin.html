@@ -50,7 +50,7 @@ table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid #eee;pad
 <div id="appView" hidden>
   <header>
     <img src="/assets/logo.png" alt="Master Coffee">
-    <nav class="tabs"><button data-tab="products" class="on">Mahsulotlar</button><button data-tab="cats">Yo'nalishlar</button><button data-tab="rent">Arenda</button><button data-tab="srv">Ta'mirlash</button><button data-tab="leads">Arizalar</button></nav>
+    <nav class="tabs"><button data-tab="products" class="on">Mahsulotlar</button><button data-tab="cats">Yo'nalishlar</button><button data-tab="rent">Arenda</button><button data-tab="srv">Ta'mirlash</button><button data-tab="inventory">Ombor</button><button data-tab="leads">Arizalar</button></nav>
     <span class="sp"></span>
     <a href="/" target="_blank" style="color:#e8b98a">Saytni ochish ↗</a>
     <button class="ghost" id="logout">Chiqish</button>
@@ -87,10 +87,12 @@ table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid #eee;pad
     </div>
   </div>
 
+  <div id="inventoryTab" class="wrap" hidden style="grid-template-columns:1fr"><div class="panel"><div class="bar" id="inventorySections"><button data-inv-section="stock">Ombor</button><button class="ghost" data-inv-section="receipts">Kirim</button><button class="ghost" data-inv-section="suppliers">Yetkazib beruvchilar</button><button class="ghost" data-inv-section="warehouses">Omborlar</button><button class="ghost" data-inv-section="employees">Xodimlar</button><button class="ghost" id="inventoryExport">Excel yuklab olish</button></div><div id="inventoryContent"></div></div></div>
+
   <div id="leadsTab" class="wrap" hidden style="grid-template-columns:1fr">
     <div class="panel"><table><thead><tr><th>Ism</th><th>Telefon</th><th>Mavzu</th><th>Izoh / savat</th></tr></thead><tbody id="leads"></tbody></table></div>
   </div>
 </div>
-<script src="/admin.js"></script>
+<script src="/admin.js?v=20261113-inventory"></script><script src="/inventory.js?v=20261113-inventory"></script>
 </body>
 </html>

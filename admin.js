@@ -29,8 +29,10 @@ document.querySelectorAll("[data-tab]").forEach(b => b.onclick = async () => {
   $("leadsTab").hidden = b.dataset.tab !== "leads";
   const sec = ["cats", "rent", "srv"].includes(b.dataset.tab) ? b.dataset.tab : "";
   $("siteTab").hidden = !sec;
+  $("inventoryTab").hidden = b.dataset.tab !== "inventory";
   document.querySelectorAll("[data-sec]").forEach(p => { p.hidden = p.dataset.sec !== sec; });
   if(sec) renderSite();
+  if(b.dataset.tab === "inventory" && typeof initInventory === "function") initInventory();
   if(b.dataset.tab === "leads") loadLeads();
 });
 
