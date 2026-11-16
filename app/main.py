@@ -167,7 +167,9 @@ def sync_ehoreca_supplier_prices() -> None:
     by_sku = {
         str(p.get("sku")).strip(): p
         for p in products
-        if isinstance(p, dict) and p.get("sku")
+        if isinstance(p, dict)
+        and p.get("sku")
+        and p.get("source_id") == "ehoreca"
     }
     for source in seed_products:
         if not isinstance(source, dict) or not source.get("sku"):
