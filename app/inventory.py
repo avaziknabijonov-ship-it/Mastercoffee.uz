@@ -148,7 +148,7 @@ def inventory_snapshot(x_admin_password: str | None = Header(default=None)):
         """):
             totals[row["id"]] = row["total_received"]
         return {"employees":employees,"warehouses":warehouses,"suppliers":suppliers,
-                "receipts":receipts,"stock":stock,"products":[{"id":p["id"],"name":p.get("name",{}),"sku":p.get("sku","")} for p in products.values()],
+                "receipts":receipts,"stock":stock,"products":[{"id":p["id"],"name":p.get("name",{}),"sku":p.get("sku",""),"supplier_price":p.get("supplier_price"),"supplier_currency":p.get("supplier_currency","USD"),"supplier_price_updated":p.get("supplier_price_updated")} for p in products.values()],
                 "supplier_totals":totals}
 
 
@@ -287,13 +287,13 @@ def _sheet_xml(rows):
 def export_inventory(x_admin_password: str | None = Header(default=None)):
     require_admin(x_admin_password)
     products=_product_map()
-    rows=[["MASTERCOFFEE · OMBOR VA KIRIM HISOBOTI"],["Hisobot vaqti",now()],[],["SAYT KATALOGI"],["Artikul","Mahsulot","Brend","Kategoriya","Holat","Yetkazish"]]
+    rows=[["MASTERCOFFEE · OMBOR VA KIRIM HISOBOTI"],["Hisobot vaqti",now()],[],["SAYT KATALOGI"],["Artikul","Mahsulot","Brend","Kategoriya","Holat","Yetkazish","EHORECA narxi","Valyuta","Narx sanasi"]]
     for p in sorted(products.values(),key=lambda x:str(x.get("sku",""))):
         name=((p.get("name") or {}).get("uz") or (p.get("name") or {}).get("ru") or p.get("id"))
         delivery=p.get("lead_time_days")
         delivery_text=(f"{delivery[0]}–{delivery[1]} kun" if isinstance(delivery,list) and len(delivery)==2 else "")
         status="Buyurtma asosida" if p.get("stock")=="order" else "Ombor"
-        rows.append([p.get("sku",""),name,p.get("brand",""),p.get("vendor_category",p.get("cat","")),status,delivery_text])
+        rows.append([p.get("sku",""),name,p.get("brand",""),p.get("vendor_category",p.get("cat","")),status,delivery_text,p.get("supplier_price"),p.get("supplier_currency","USD"),p.get("supplier_price_updated")])
     rows += [[],["OMBOR QOLDIGI"],["Artikul","Mahsulot","Ombor","Miqdor","Kirim qiymati"]]
     with database() as db:
         for r in db.execute("""
