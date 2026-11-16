@@ -9,7 +9,10 @@ async function initInventory(){await invLoad();}
 function invOptions(list,selected,label,products){return '<option value="">'+label+'</option>'+list.map(x=>'<option value="'+ie(x.id)+'"'+(x.id===selected?' selected':'')+'>'+ie(products?((x.name||{}).uz||(x.name||{}).ru||x.id)+(x.sku?' · '+x.sku:''):x.name)+'</option>').join('');}
 function invTable(head,body){return '<div style="overflow:auto"><table><thead><tr>'+head.map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>'+(body||'<tr><td colspan="'+head.length+'">Ma’lumot yo‘q</td></tr>')+'</tbody></table></div>';}
 function receiptLineRow(x){
- return '<div class="row3 card" data-receipt-line><label>Mahsulot<select data-line-product required>'+invOptions(inv.products,x.product_id,"Mahsulotni tanlang",true)+'</select></label><label>Miqdor<input data-line-qty type="number" min="0.01" step="0.01" required value="'+ie(x.quantity||1)+'"></label><label>Birlik narxi<input data-line-cost type="number" min="0" step="0.01" value="'+ie(x.unit_cost||0)+'"></label><label>Valyuta<select data-line-currency><option'+(x.currency!=="UZS"?" selected":"")+'>USD</option><option'+(x.currency==="UZS"?" selected":"")+'>UZS</option></select></label><button type="button" class="danger" data-remove-line>Qatorni o‘chirish</button></div>';
+ const product=inv.products.find(p=>p.id===x.product_id);
+ const cost=x.unit_cost!=null?x.unit_cost:(product?.supplier_price??0);
+ const currency=x.currency||product?.supplier_currency||"USD";
+ return '<div class="row3 card" data-receipt-line><label>Mahsulot<select data-line-product required>'+invOptions(inv.products,x.product_id,"Mahsulotni tanlang",true)+'</select></label><label>Miqdor<input data-line-qty type="number" min="0.01" step="0.01" required value="'+ie(x.quantity||1)+'"></label><label>Birlik narxi<input data-line-cost type="number" min="0" step="0.01" value="'+ie(cost)+'"></label><label>Valyuta<select data-line-currency><option'+(currency==="USD"?" selected":"")+'>USD</option><option'+(currency==="UZS"?" selected":"")+'>UZS</option></select></label><button type="button" class="danger" data-remove-line>Qatorni o‘chirish</button></div>';
 }
 function receiptLinesForm(lines){return '<div data-receipt-lines>'+lines.map(receiptLineRow).join("")+'</div>';}
 function invRender(){
@@ -31,13 +34,22 @@ function invRender(){
  }else if(invTab==="receipts"){
   let body=inv.receipts.map(x=>'<tr><td>'+ie(x.received_at)+'</td><td>'+ie(x.supplier_name)+'</td><td>'+ie(x.warehouse_name)+'</td><td>'+ie(x.employee_name||"—")+'</td><td>'+x.lines.length+' mahsulot</td><td>'+invBtn("receipts",x)+'</td></tr>').join("");
   let x=invEdit?.kind==="receipts"?inv.receipts.find(v=>v.id===invEdit.id):null;
-  let lines=x?.lines||[{quantity:1,unit_cost:0,currency:"USD"}];
+  let lines=x?.lines||[{quantity:1}];
   ir.innerHTML='<h2>Mahsulot kirimi</h2>'+invTable(["Sana","Yetkazib beruvchi","Ombor","Xodim","Mahsulotlar",""],body)+'<div class="card"><form data-kind="receipts" data-id="'+ie(x?.id||"")+'"><h3>'+(x?"Kirimni tahrirlash":"Yangi kirim")+'</h3><div class="row3"><label>Sana<input name="received_at" type="date" required value="'+ie(x?.received_at||new Date().toISOString().slice(0,10))+'"></label><label>Yetkazib beruvchi<select name="supplier_id" required>'+invOptions(inv.suppliers.filter(v=>v.active),x?.supplier_id,"Tanlang")+'</select></label><label>Ombor<select name="warehouse_id" required>'+invOptions(inv.warehouses.filter(v=>v.active),x?.warehouse_id,"Tanlang")+'</select></label></div><div class="row"><label>Xodim<select name="employee_id">'+invOptions(inv.employees.filter(v=>v.active),x?.employee_id,"Tanlanmagan")+'</select></label><label>Izoh<input name="note" value="'+ie(x?.note||"")+'"></label></div>'+receiptLinesForm(lines)+'<div class="bar"><button type="button" class="ghost" data-add-line>+ Mahsulot qatori</button><button type="submit">'+(x?"Kirimni saqlash":"Kirimni qayd etish")+'</button>'+(x?'<button type="button" class="ghost" data-cancel>Bekor qilish</button>':"")+'<span class="msg" data-msg></span></div></form></div>';
  }}
 document.getElementById("inventorySections").addEventListener("click",e=>{const b=e.target.closest("[data-inv-section]");if(b){invTab=b.dataset.invSection;invEdit=null;invRender();}});
 document.getElementById("inventoryExport").addEventListener("click",async()=>{const r=await iv("/api/admin/inventory.xlsx");if(!r.ok){alert("Excel yuklanmadi: "+r.status);return;}const u=URL.createObjectURL(await r.blob()),a=document.createElement("a");a.href=u;a.download="mastercoffee-inventory.xlsx";a.click();setTimeout(()=>URL.revokeObjectURL(u),30000);});
+
+ir.addEventListener("change",e=>{
+ const select=e.target.closest("[data-line-product]");
+ if(!select)return;
+ const product=inv.products.find(p=>p.id===select.value);
+ const row=select.closest("[data-receipt-line]");
+ if(product?.supplier_price!=null)row.querySelector("[data-line-cost]").value=product.supplier_price;
+ if(product?.supplier_currency)row.querySelector("[data-line-currency]").value=product.supplier_currency;
+});
 ir.addEventListener("click",async e=>{
- const addLine=e.target.closest("[data-add-line]");if(addLine){addLine.closest("form").querySelector("[data-receipt-lines]").insertAdjacentHTML("beforeend",receiptLineRow({quantity:1,unit_cost:0,currency:"USD"}));return;}
+ const addLine=e.target.closest("[data-add-line]");if(addLine){addLine.closest("form").querySelector("[data-receipt-lines]").insertAdjacentHTML("beforeend",receiptLineRow({quantity:1}));return;}
  const removeLine=e.target.closest("[data-remove-line]");if(removeLine){const rows=removeLine.closest("[data-receipt-lines]").querySelectorAll("[data-receipt-line]");if(rows.length>1)removeLine.closest("[data-receipt-line]").remove();return;}
  const edit=e.target.closest("[data-e]");if(edit){invEdit={kind:edit.dataset.e,id:edit.dataset.id};invRender();return;}
  const cancel=e.target.closest("[data-cancel]");if(cancel){invEdit=null;invRender();return;}
