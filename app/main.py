@@ -53,6 +53,7 @@ PRODUCTS_FILE = DATA_DIR / "products.json"
 SEED_FILE = ROOT / "data" / "products.json"
 EHORECA_SEED_FILE = ROOT / "data" / "ehoreca-products.json"
 EHORECA_IMPORT_MARKER = DATA_DIR / ".ehoreca-products-imported-v1"
+EHORECA_PRICE_LIST_MARKER = DATA_DIR / ".ehoreca-pricelist-2026-11-16-imported"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 SITE_FILE = DATA_DIR / "site.json"
 SITE_SEED = ROOT / "data" / "site.json"
@@ -151,6 +152,43 @@ def import_ehoreca_catalog_once() -> None:
 
 
 import_ehoreca_catalog_once()
+
+def sync_ehoreca_supplier_prices() -> None:
+    """Refresh hidden supplier costs and add newly listed EHORECA products once."""
+    if EHORECA_PRICE_LIST_MARKER.exists() or not EHORECA_SEED_FILE.is_file():
+        return
+    payload = json.loads(EHORECA_SEED_FILE.read_text(encoding="utf-8"))
+    seed_products = payload.get("products", [])
+    if not isinstance(seed_products, list):
+        raise RuntimeError("Invalid EHORECA price list")
+
+    products = read_products()
+    by_id = {str(p.get("id")): p for p in products if isinstance(p, dict) and p.get("id")}
+    by_sku = {
+        str(p.get("sku")).strip(): p
+        for p in products
+        if isinstance(p, dict) and p.get("sku")
+    }
+    for source in seed_products:
+        if not isinstance(source, dict) or not source.get("sku"):
+            continue
+        current = by_id.get(str(source.get("id"))) or by_sku.get(str(source["sku"]).strip())
+        if current is None:
+            current = dict(source)
+            products.append(current)
+            by_id[str(current.get("id"))] = current
+            by_sku[str(current["sku"]).strip()] = current
+            continue
+        for field in ("supplier_price", "supplier_currency", "supplier_price_updated"):
+            current[field] = source.get(field)
+
+    write_products(products)
+    marker_tmp = EHORECA_PRICE_LIST_MARKER.with_suffix(".tmp")
+    marker_tmp.write_text("2026-11-16\\n", encoding="utf-8")
+    marker_tmp.replace(EHORECA_PRICE_LIST_MARKER)
+
+
+sync_ehoreca_supplier_prices()
 
 
 def cat_ids() -> set:
